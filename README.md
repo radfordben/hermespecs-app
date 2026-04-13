@@ -13,7 +13,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue.svg)]()
-[![Status](https://img.shields.io/badge/status-Phase%201%20Complete-success.svg)]()
+[![Status](https://img.shields.io/badge/status-Production%20Ready-success.svg)]()
 
 ---
 
