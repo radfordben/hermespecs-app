@@ -7,7 +7,8 @@
 import Foundation
 import UIKit
 import Combine
-import MetaWearablesSDK
+import MWDATCamera
+import MWDATCore
 
 @MainActor
 class PerformanceMonitor: ObservableObject {
