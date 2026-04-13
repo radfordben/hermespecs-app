@@ -1,0 +1,450 @@
+/*
+ * 中文本地化字符串
+ * Simplified Chinese Localization
+ */
+
+// MARK: - App General
+"app.name" = "TurboMeta";
+"app.subtitle" = "RayBan Meta助手";
+"ok" = "确定";
+"cancel" = "取消";
+"close" = "关闭";
+"done" = "完成";
+"error" = "错误";
+"loading" = "加载中...";
+"save" = "保存";
+"delete" = "删除";
+"retry" = "重试";
+"back" = "返回";
+
+// MARK: - Home Screen
+"home.title" = "首页";
+"home.liveai.title" = "Live AI";
+"home.liveai.subtitle" = "实时对话";
+"home.quickvision.title" = "快速识图";
+"home.quickvision.subtitle" = "Siri 语音触发";
+"home.translate.title" = "实时翻译";
+"home.translate.subtitle" = "即时翻译";
+"home.leaneat.title" = "LeanEat";
+"home.leaneat.subtitle" = "卡路里识别";
+"home.wordlearn.title" = "WordLearn";
+"home.wordlearn.subtitle" = "单词学习";
+"home.livestream.title" = "直播";
+"home.livestream.subtitle" = "抖音 · 快手 · 小红书";
+"home.rtmp.title" = "RTMP 推流";
+"home.rtmp.subtitle" = "YouTube · Twitch · B站";
+"home.experimental" = "实验性";
+"home.comingsoon" = "敬请期待";
+
+// MARK: - Live AI
+"liveai.title" = "Live AI";
+"liveai.connected" = "已连接";
+"liveai.connecting" = "连接中...";
+"liveai.disconnected" = "未连接";
+"liveai.speaking" = "AI 说话中";
+"liveai.listening" = "正在听...";
+"liveai.thinking" = "思考中...";
+"liveai.stop" = "停止";
+"liveai.start" = "开始";
+"liveai.device.notconnected.title" = "未连接RayBan Meta眼镜";
+"liveai.device.notconnected.message" = "请先在首页连接你的智能眼镜，\n然后再使用Live AI功能";
+"liveai.device.backtohome" = "返回首页";
+
+// MARK: - Quick Vision
+"quickvision.title" = "快速识图";
+"quickvision.recognizing" = "正在识别";
+"quickvision.result" = "识别结果";
+"quickvision.start" = "开始识图";
+"quickvision.processing" = "识别中...";
+"quickvision.glasses.notconnected" = "眼镜未连接";
+"quickvision.siri.tip.title" = "Siri 快捷指令";
+"quickvision.siri.tip.description" = "你可以通过以下方式触发快速识图：";
+"quickvision.siri.tip.voice" = "嘿 Siri，用 TurboMeta 识图";
+"quickvision.siri.tip.action" = "添加到快捷指令 App 的锁屏小组件";
+"quickvision.siri.support" = "支持 Siri 和快捷指令";
+"quickvision.stop.speaking" = "停止播报";
+"quickvision.replay" = "重新播报";
+"quickvision.error.nodevice" = "眼镜未连接，请先在 Meta View 中配对眼镜";
+"quickvision.error.streamfailed" = "视频流启动失败，请检查眼镜连接状态";
+"quickvision.error.timeout" = "等待视频帧超时，请重试";
+"quickvision.error.noimage" = "无法处理图片";
+"quickvision.error.apikey" = "请先在设置中配置 API Key";
+
+// MARK: - Stream View (Camera)
+"stream.title" = "拍照";
+"stream.stop" = "停止直播";
+"stream.photo" = "拍照";
+"stream.timer" = "定时器";
+"stream.ending" = "直播将在 %@ 后结束";
+"stream.device.notconnected.title" = "未连接RayBan Meta眼镜";
+"stream.device.notconnected.message" = "请先在首页连接你的智能眼镜，\n然后再使用直播功能";
+"stream.device.backtohome" = "返回首页";
+"stream.connecting" = "正在连接眼镜...";
+"stream.waiting" = "等待视频流...";
+
+// MARK: - Photo Preview
+"photo.share" = "分享";
+"photo.ai" = "AI 识别";
+"photo.nutrition" = "营养分析";
+"photo.save" = "保存到相册";
+"photo.saved" = "已保存";
+
+// MARK: - LeanEat (Nutrition Analysis)
+"leaneat.title" = "营养分析";
+"leaneat.analyzing" = "分析中...";
+"leaneat.healthscore" = "健康评分";
+"leaneat.totalnutrition" = "总营养";
+"leaneat.calories" = "热量";
+"leaneat.protein" = "蛋白质";
+"leaneat.fat" = "脂肪";
+"leaneat.carbs" = "碳水";
+"leaneat.fiber" = "膳食纤维";
+"leaneat.sugar" = "糖分";
+"leaneat.foods" = "食物详情";
+"leaneat.suggestions" = "营养建议";
+"leaneat.portion" = "份量";
+"leaneat.rating.excellent" = "优秀";
+"leaneat.rating.good" = "良好";
+"leaneat.rating.fair" = "一般";
+"leaneat.rating.poor" = "较差";
+"leaneat.healthscore.excellent" = "非常健康";
+"leaneat.healthscore.good" = "比较健康";
+"leaneat.healthscore.fair" = "还不错";
+"leaneat.healthscore.poor" = "需要改善";
+"leaneat.error.title" = "分析失败";
+"leaneat.retry" = "重试";
+
+// MARK: - Vision Recognition
+"vision.title" = "AI 图像识别";
+"vision.analyzing" = "AI 分析中...";
+"vision.result" = "识别结果";
+
+// MARK: - Records
+"records.title" = "记录";
+"records.empty" = "暂无记录";
+"records.conversation" = "对话记录";
+"records.date" = "日期";
+
+// MARK: - Gallery
+"gallery.title" = "图库";
+"gallery.empty" = "暂无照片";
+
+// MARK: - Settings
+"settings.title" = "我的";
+"settings.device" = "设备管理";
+"settings.device.status" = "设备状态";
+"settings.device.online" = "在线";
+"settings.device.offline" = "离线";
+"settings.device.connected" = "已连接";
+"settings.device.notconnected" = "未连接";
+"settings.device.stream" = "视频流";
+"settings.device.stream.active" = "活跃";
+"settings.device.stream.inactive" = "未启动";
+"settings.ai" = "AI 设置";
+
+// API Provider
+"settings.provider" = "API 提供商";
+"settings.provider.select" = "选择 API 提供商";
+"settings.provider.description" = "选择用于 AI 识图的 API 服务提供商";
+"settings.provider.alibaba.desc" = "阿里云通义千问视觉模型";
+"settings.provider.openrouter.desc" = "统一接口，500+ AI 模型";
+"settings.provider.getapikey" = "获取 API Key";
+
+// Model Settings
+"settings.model" = "模型设置";
+"settings.model.select" = "选择模型";
+"settings.model.current" = "当前使用";
+"settings.model.alibaba" = "阿里云模型";
+"settings.model.openrouter" = "OpenRouter 模型";
+"settings.model.qwen3vlplus.desc" = "高性能视觉理解模型";
+"settings.model.qwen3vlmax.desc" = "最强视觉理解模型";
+"settings.model.search" = "搜索模型...";
+"settings.model.visiononly" = "仅显示支持视觉的模型";
+"settings.model.loading" = "加载模型列表...";
+"settings.model.retry" = "重试";
+"settings.model.notfound" = "未找到匹配的模型";
+
+// Endpoint Settings
+"settings.endpoint" = "服务区域";
+"settings.endpoint.beijing.desc" = "中国大陆用户使用";
+"settings.endpoint.singapore.desc" = "海外用户使用";
+"settings.endpoint.description" = "不同区域的 API Key 不能互通使用";
+
+// Live AI Settings
+"settings.liveai" = "Live AI";
+"settings.liveai.provider" = "Live AI 提供商";
+"settings.liveai.provider.select" = "选择 Live AI 提供商";
+"settings.liveai.provider.description" = "选择用于实时语音对话的 AI 提供商";
+"settings.liveai.alibaba.desc" = "通义千问 Omni 实时音频模型";
+"settings.liveai.google.desc" = "Gemini Live 实时音频模型";
+
+"settings.language" = "输出语言";
+"settings.language.select" = "选择输出语言";
+"settings.language.description" = "AI 将使用该语言进行语音输出和文字回复";
+"settings.applanguage" = "App 语言";
+"settings.applanguage.select" = "选择 App 语言";
+"settings.applanguage.description" = "更改 App 界面语言";
+"settings.applanguage.restart.title" = "需要重启";
+"settings.applanguage.restart.message" = "切换语言需要重启 App 才能生效";
+"settings.applanguage.restart.confirm" = "立即重启";
+
+// API Key
+"settings.apikey" = "API Key 管理";
+"settings.apikey.manage" = "API Key 管理";
+"settings.apikey.status" = "API Key 状态";
+"settings.apikey.configured" = "已配置";
+"settings.apikey.notconfigured" = "未配置";
+"settings.apikey.placeholder" = "请输入 API Key";
+"settings.apikey.alibaba.help" = "请前往阿里云控制台获取您的 API Key";
+"settings.apikey.openrouter.help" = "请前往 OpenRouter 网站获取您的 API Key";
+"settings.apikey.google.help" = "请前往 Google AI Studio 获取您的 API Key";
+"settings.apikey.get" = "获取 API Key";
+"settings.apikey.delete" = "删除 API Key";
+"settings.apikey.saved" = "保存成功";
+"settings.apikey.saved.message" = "API Key 已安全保存";
+"settings.apikey.empty" = "API Key 不能为空";
+"settings.apikey.savefailed" = "保存失败，请重试";
+"settings.apikey.deletefailed" = "删除失败，请重试";
+
+"settings.quality" = "视频画质";
+"settings.quality.select" = "选择视频画质";
+"settings.quality.description" = "更高的画质会消耗更多电量";
+"settings.quality.low" = "低画质";
+"settings.quality.low.desc" = "省电模式，适合长时间使用";
+"settings.quality.medium" = "中画质";
+"settings.quality.medium.desc" = "平衡模式（推荐）";
+"settings.quality.high" = "高画质";
+"settings.quality.high.desc" = "最佳画质，耗电较快";
+"settings.about" = "关于";
+"settings.version" = "版本";
+"settings.sdkversion" = "SDK 版本";
+
+// MARK: - Tabs
+"tab.home" = "首页";
+"tab.records" = "记录";
+"tab.gallery" = "图库";
+"tab.settings" = "我的";
+
+// MARK: - Errors
+"error.network" = "网络错误，请检查网络连接";
+"error.api" = "API 错误";
+"error.api.code" = "API 错误: %d";
+"error.permission.denied" = "权限被拒绝，请在设置中开启";
+"error.device.notfound" = "未找到设备";
+"error.device.notconnected" = "设备未连接";
+"error.timeout" = "操作超时，请重试";
+"error.unknown" = "未知错误";
+"error.invalidresponse" = "无效的响应";
+"error.noaudiodata" = "未收到音频数据";
+"error.playbackfailed" = "音频播放失败";
+
+// MARK: - TTS
+"tts.speaking" = "播报中...";
+"tts.stopped" = "已停止";
+
+// MARK: - Units
+"unit.kcal" = "千卡";
+"unit.gram" = "克";
+"unit.g" = "g";
+
+// MARK: - AI Prompts
+"prompt.quickvision" = "你是一个智能眼镜AI助手。请用简洁的中文描述图片内容，适合语音播报。\n\n要求：\n1. 用1-2句话描述主要内容\n2. 语言自然、口语化\n3. 不要使用标点符号过多\n4. 总字数控制在50字以内\n5. 直接描述，不要说\"图片中\"或\"我看到\"";
+"prompt.liveai" = "你是RayBan Meta智能眼镜AI助手。\n\n【重要】必须始终用中文回答，无论用户说什么语言。\n\n回答要简练、口语化，像朋友聊天一样。用户戴着眼镜可以看到周围环境，根据画面快速给出有用的建议。不要啰嗦，直接说重点。";
+
+// MARK: - Quick Vision Modes
+"prompt.quickvision.health" = "分析这个食品/饮料的健康程度。从以下角度科学分析：\n1. 营养成分是否均衡\n2. 添加剂和防腐剂情况\n3. 糖分/盐分/脂肪含量\n4. 对身体的潜在影响\n5. 给出健康建议\n\n用简洁口语化的方式回答，适合语音播报，控制在100字以内。";
+"prompt.quickvision.blind" = "为视障用户详细描述眼前的环境，包括：\n1. 周围有什么物体和人\n2. 大概的距离和方位\n3. 是否有障碍物或危险\n4. 环境的整体氛围（室内/室外、明暗等）\n5. 任何需要注意的细节\n\n描述要清晰、具体，使用方位词（前方、左侧等），控制在80字以内。";
+"prompt.quickvision.reading" = "识别并朗读图片中的文字内容。要求：\n1. 准确识别所有可见文字\n2. 按照阅读顺序组织内容\n3. 如果是菜单/标牌，说明类型\n4. 如果文字不清晰，说明情况\n\n直接朗读文字内容，不需要额外解释。";
+"prompt.quickvision.translate" = "识别图片中的文字，并翻译成{LANGUAGE}。要求：\n1. 准确识别所有可见文字\n2. 翻译要准确、自然\n3. 如果有多段文字，分段翻译\n4. 直接说翻译结果，不需要说明原文\n\n适合语音播报，控制在100字以内。";
+"prompt.quickvision.encyclopedia" = "识别图片中的物体、建筑、艺术品或生物，提供百科知识介绍。包括：\n1. 名称和分类\n2. 历史背景或来源\n3. 有趣的知识点\n4. 相关文化意义\n\n像博物馆讲解员一样，生动有趣，适合语音播报，控制在100字以内。";
+
+"quickvision.mode.standard" = "默认模式";
+"quickvision.mode.health" = "健康识图";
+"quickvision.mode.blind" = "盲人模式";
+"quickvision.mode.reading" = "阅读模式";
+"quickvision.mode.translate" = "翻译模式";
+"quickvision.mode.encyclopedia" = "百科模式";
+"quickvision.mode.custom" = "自定义提示词";
+
+"quickvision.mode.standard.desc" = "通用图像描述";
+"quickvision.mode.health.desc" = "分析食品健康程度";
+"quickvision.mode.blind.desc" = "为视障用户描述环境";
+"quickvision.mode.reading.desc" = "识别并朗读文字";
+"quickvision.mode.translate.desc" = "识别并翻译文字";
+"quickvision.mode.encyclopedia.desc" = "百科知识介绍";
+"quickvision.mode.custom.desc" = "使用自定义提示词";
+
+"quickvision.settings" = "识图设置";
+"quickvision.settings.mode" = "识图模式";
+"quickvision.settings.customprompt" = "自定义提示词";
+"quickvision.settings.targetlanguage" = "翻译目标语言";
+"quickvision.settings.history" = "识图历史";
+"quickvision.history" = "识图历史";
+"quickvision.history.empty" = "暂无识图记录";
+"quickvision.history.clear" = "清空历史";
+"quickvision.history.clear.confirm" = "确定要清空所有识图历史吗？";
+"quickvision.today" = "今天";
+"quickvision.yesterday" = "昨天";
+"quickvision.custom.default" = "请用简洁的语言描述图片内容，适合语音播报。";
+"quickvision.tab" = "快速识图";
+"quickvision.records.empty" = "暂无识图记录";
+"quickvision.records.empty.hint" = "使用快速识图功能后记录将显示在这里";
+
+// MARK: - Live AI Modes
+"liveai.mode.standard" = "默认模式";
+"liveai.mode.museum" = "博物馆模式";
+"liveai.mode.blind" = "盲人模式";
+"liveai.mode.reading" = "阅读模式";
+"liveai.mode.translate" = "翻译模式";
+"liveai.mode.custom" = "自定义提示词";
+
+"liveai.mode.standard.desc" = "自由对话，语音触发时看图";
+"liveai.mode.museum.desc" = "博物馆讲解员，介绍展品知识";
+"liveai.mode.blind.desc" = "详细描述环境，辅助视障用户";
+"liveai.mode.reading.desc" = "识别并朗读文字内容";
+"liveai.mode.translate.desc" = "实时翻译看到的文字";
+"liveai.mode.custom.desc" = "使用自定义系统提示词";
+
+"liveai.settings" = "对话模式";
+"liveai.settings.mode" = "对话模式";
+"liveai.settings.mode.footer" = "不同模式会改变 AI 的行为方式。重新连接后生效。";
+"liveai.settings.customprompt" = "自定义系统提示词";
+"liveai.settings.customprompt.footer" = "自定义 AI 的角色和行为，将在下次连接时生效。";
+"liveai.settings.targetlanguage" = "翻译目标语言";
+"liveai.custom.default" = "你是一个智能助手，帮助用户完成各种任务。请用简洁的语言回答问题。";
+
+// Live AI Mode Prompts
+"prompt.liveai.standard" = "你是RayBan Meta智能眼镜AI助手。\n\n【重要】必须始终用中文回答，无论用户说什么语言。\n\n回答要简练、口语化，像朋友聊天一样。用户戴着眼镜可以看到周围环境，根据画面快速给出有用的建议。不要啰嗦，直接说重点。";
+"prompt.liveai.museum" = "你是一位专业的博物馆讲解员AI助手。\n\n【重要】必须始终用中文回答。\n\n当用户看向展品时，请提供：\n1. 展品名称和基本信息\n2. 历史背景和文化意义\n3. 有趣的故事或知识点\n4. 与其他展品的关联\n\n像一位知识渊博又风趣的讲解员，让参观变得生动有趣。";
+"prompt.liveai.blind" = "你是视障用户的智能眼镜助手。\n\n【重要】必须始终用中文回答。\n\n你的任务是帮助用户理解周围环境：\n1. 详细描述周围的物体、人和环境\n2. 使用清晰的方位词（前方、左侧、右后方等）\n3. 指出可能的障碍物或危险\n4. 朗读标识、菜单等文字内容\n5. 提供安全、实用的导航建议\n\n说话清晰、有条理，优先说最重要的信息。";
+"prompt.liveai.reading" = "你是阅读辅助AI助手。\n\n【重要】必须始终用中文回答。\n\n你的任务是帮助用户阅读看到的文字：\n1. 准确识别并朗读所有可见文字\n2. 按照正确的阅读顺序组织内容\n3. 对于文档，说明文字的结构\n4. 对于外语，先读原文再翻译\n\n语速适中，吐字清晰，像一位专业的朗读者。";
+"prompt.liveai.translate" = "你是实时翻译AI助手。\n\n【重要】翻译结果必须使用{LANGUAGE}。\n\n你的任务是帮助用户理解看到的外语内容：\n1. 识别画面中的文字\n2. 翻译成{LANGUAGE}\n3. 如果是菜单或标识，说明其用途\n4. 对于专业术语，提供简单解释\n\n翻译要准确、自然、地道。";
+
+// MARK: - RTMP 推流
+"rtmp.title" = "RTMP 推流";
+"rtmp.status.disconnected" = "未连接";
+"rtmp.status.connecting" = "连接中...";
+"rtmp.status.connected" = "已连接";
+"rtmp.status.streaming" = "推流中";
+"rtmp.connecting.video" = "正在连接视频流...";
+"rtmp.frames" = "帧数";
+"rtmp.time" = "时长";
+"rtmp.data" = "数据";
+"rtmp.start" = "开始推流";
+"rtmp.stop" = "停止推流";
+"rtmp.url.placeholder" = "RTMP 服务器地址";
+"rtmp.key.placeholder" = "推流密钥";
+"rtmp.settings" = "推流设置";
+"rtmp.settings.bitrate" = "码率";
+"rtmp.settings.bitrate.description" = "码率越高画质越好，但需要更多带宽";
+"rtmp.settings.platform" = "平台预设";
+"rtmp.settings.note" = "说明";
+"rtmp.settings.experimental" = "实验性功能";
+"rtmp.settings.experimental.description" = "RTMP 推流是实验性功能，部分平台可能需要额外配置。";
+"rtmp.recommended" = "推荐";
+"rtmp.platform.custom" = "自定义";
+"rtmp.error.invalidurl" = "请输入有效的 RTMP 地址";
+
+// MARK: - Live Translate 实时翻译
+"livetranslate.title" = "实时翻译";
+"livetranslate.connected" = "已连接";
+"livetranslate.connecting" = "连接中...";
+"livetranslate.recording" = "录音中";
+"livetranslate.placeholder" = "按住录音按钮开始说话";
+"livetranslate.source" = "源语言";
+"livetranslate.target" = "目标语言";
+"livetranslate.clear" = "清除";
+
+// Live Translate Settings
+"livetranslate.settings.title" = "翻译设置";
+"livetranslate.settings.sourceLanguage" = "源语言";
+"livetranslate.settings.targetLanguage" = "目标语言";
+"livetranslate.settings.targetLanguage.footer" = "目标语言支持语音输出";
+"livetranslate.settings.voice" = "音色";
+"livetranslate.settings.voice.footer" = "不同音色支持不同的语种";
+"livetranslate.settings.output" = "输出设置";
+"livetranslate.settings.audioOutput" = "语音输出";
+"livetranslate.settings.imageEnhance" = "视觉增强";
+"livetranslate.settings.imageEnhance.footer" = "启用视觉增强可提高同音异义词的翻译准确性";
+"livetranslate.settings.history" = "翻译历史";
+"livetranslate.settings.clearHistory" = "清空历史";
+"livetranslate.settings.historyCount" = "共 %d 条翻译记录";
+"common.done" = "完成";
+"common.ok" = "确定";
+
+// Live Translate Languages
+"livetranslate.lang.en" = "英语";
+"livetranslate.lang.zh" = "中文";
+"livetranslate.lang.ja" = "日语";
+"livetranslate.lang.ko" = "韩语";
+"livetranslate.lang.fr" = "法语";
+"livetranslate.lang.de" = "德语";
+"livetranslate.lang.ru" = "俄语";
+"livetranslate.lang.es" = "西班牙语";
+"livetranslate.lang.pt" = "葡萄牙语";
+"livetranslate.lang.it" = "意大利语";
+"livetranslate.lang.yue" = "粤语";
+"livetranslate.lang.id" = "印尼语";
+"livetranslate.lang.vi" = "越南语";
+"livetranslate.lang.th" = "泰语";
+"livetranslate.lang.ar" = "阿拉伯语";
+"livetranslate.lang.hi" = "印地语";
+"livetranslate.lang.el" = "希腊语";
+"livetranslate.lang.tr" = "土耳其语";
+
+// Live Translate Voices
+"livetranslate.voice.cherry" = "Cherry";
+"livetranslate.voice.nofish" = "Nofish";
+"livetranslate.voice.jada" = "Jada";
+"livetranslate.voice.dylan" = "Dylan";
+"livetranslate.voice.sunny" = "Sunny";
+"livetranslate.voice.peter" = "Peter";
+"livetranslate.voice.kiki" = "Kiki";
+"livetranslate.voice.eric" = "Eric";
+
+"livetranslate.voice.cherry.desc" = "温暖女声，支持多语种";
+"livetranslate.voice.nofish.desc" = "自然女声，支持多语种";
+"livetranslate.voice.jada.desc" = "活泼女声，仅支持中文";
+"livetranslate.voice.dylan.desc" = "磁性男声，仅支持中文";
+"livetranslate.voice.sunny.desc" = "阳光女声，仅支持中文";
+"livetranslate.voice.peter.desc" = "稳重男声，仅支持中文";
+"livetranslate.voice.kiki.desc" = "粤语女声，仅支持粤语";
+"livetranslate.voice.eric.desc" = "成熟男声，仅支持中文";
+
+// Live Translate Errors
+"livetranslate.error.title" = "翻译错误";
+"livetranslate.error.noApiKey" = "请先在设置中配置 API Key";
+"livetranslate.error.cannotSwap" = "当前语言组合不支持交换";
+
+// Live Translate Microphone
+"livetranslate.settings.microphone" = "麦克风";
+"livetranslate.settings.usePhoneMic" = "使用 iPhone 麦克风";
+"livetranslate.settings.microphone.footer" = "开启后使用 iPhone 麦克风录音，适合翻译对方说的话；关闭则使用眼镜麦克风，适合翻译自己说的话";
+
+// Live Translate Home Card
+"home.translate.title" = "实时翻译";
+"home.translate.subtitle" = "18种语言互译";
+
+// OpenClaw Integration
+"settings.integrations" = "集成";
+"openclaw.status.connected" = "已连接";
+"openclaw.status.connecting" = "连接中...";
+"openclaw.status.pairing" = "等待配对";
+"openclaw.status.disconnected" = "未连接";
+"openclaw.connect" = "连接 Gateway";
+"openclaw.disconnect" = "断开连接";
+"openclaw.pairing.hint" = "请在 OpenClaw 终端执行 openclaw devices approve 完成配对";
+"openclaw.gateway.help" = "输入运行 OpenClaw Gateway 的设备地址和端口。本机默认为 127.0.0.1:18789";
+"openclaw.capabilities" = "设备能力";
+"openclaw.capabilities.desc" = "连接后，OpenClaw AI 可以通过眼镜拍照、获取设备状态等";
+"home.openclaw.subtitle" = "OpenClaw";
+"home.openclaw.connected" = "已连接";
+"openclaw.chat.placeholder" = "输入消息...";
+"openclaw.chat.photoprompt" = "请看这张眼镜拍摄的照片";
+"openclaw.chat.snap" = "拍照发送";
+"openclaw.chat.sending" = "发送中...";
+"openclaw.chat.noframe" = "无法获取眼镜画面，请确认眼镜已连接";
+"openclaw.chat.noapikey" = "请先在设置中配置阿里云 API Key";
+"openclaw.chat.sendvoice" = "发送";
+"openclaw.chat.text" = "键盘";
+"openclaw.chat.listening" = "正在聆听...";

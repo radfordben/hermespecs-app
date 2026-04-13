@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#5B86E5</color>
+    <color name="secondary">#36D1DC</color>
+    <color name="accent">#667EEA</color>
+
+    <!-- Feature Colors -->
+    <color name="liveai">#667EEA</color>
+    <color name="translate">#4ECDC4</color>
+    <color name="leaneat">#FF6B6B</color>
+    <color name="wordlearn">#FFA07A</color>
+    <color name="livestream">#F38181</color>
+
+    <!-- Health Score Colors -->
+    <color name="health_excellent">#4CAF50</color>
+    <color name="health_good">#FFC107</color>
+    <color name="health_fair">#FF9800</color>
+    <color name="health_poor">#F44336</color>
+
+    <!-- System Colors -->
+    <color name="background">#FFFFFF</color>
+    <color name="surface">#F5F5F5</color>
+    <color name="card_background">#FFFFFF</color>
+
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#999999</color>
+
+    <!-- Status Colors -->
+    <color name="success">#61BC63</color>
+    <color name="warning">#FFCC00</color>
+    <color name="error">#FF3B30</color>
+    <color name="info">#0064E0</color>
+
+    <!-- Destructive -->
+    <color name="destructive_background">#FFD8DB</color>
+    <color name="destructive_foreground">#AA071E</color>
+
+    <!-- Gradient Start/End -->
+    <color name="gradient_start">#667EEA</color>
+    <color name="gradient_end">#764BA2</color>
+</resources>
