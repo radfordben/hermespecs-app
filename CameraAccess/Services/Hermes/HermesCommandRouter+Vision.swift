@@ -139,63 +139,74 @@ extension HermesCommandRouter {
         return await handleCommand(command, image: nil)
     }
     
-    /// Sends a vision command with image data to Hermes
+    /// Sends a vision command with image data to the AI service
     private func sendVisionCommand(
         _ command: String,
         frame: ProcessedFrame,
         type: VisionCommandType?
     ) async -> HermesRouterResult {
-        
+
         isProcessing = true
         defer { isProcessing = false }
-        
-        // Build vision request
-        let visionContext = VisionContext(
-            cameraSource: "rayban_meta",
-            lighting: nil,  // Could be detected from image analysis
-            location: nil,  // Could include GPS if available
-            previousContext: lastCommand
-        )
-        
-        let request = HermesVisionRequest(
-            command: command,
-            imageData: frame.base64Data,
-            imageMimeType: frame.mimeType,
-            imageDimensions: ImageDimensions(width: frame.width, height: frame.height),
-            context: visionContext,
-            timestamp: Date()
-        )
-        
-        // Send to Hermes
+
+        let image = processFrameToImage(frame)
+
         do {
-            let result = try await hermesService.sendVisionCommand(request)
-            
-            // Process response
-            lastResponse = result.message
-            
-            // Speak response if TTS enabled
-            if result.shouldSpeak, let message = result.message {
-                await speakResponse(message)
+            let responseResult: Result<HermesResponse, Error> = await withCheckedContinuation { continuation in
+                aiService.sendVisionCommand(command, image: image) { result in
+                    continuation.resume(returning: result)
+                }
             }
-            
-            return result
-            
-        } catch {
-            onError?(error)
-            return HermesRouterResult(
-                success: false,
-                message: "Sorry, I had trouble analyzing what you're looking at. Please try again.",
-                toolCalls: [],
-                shouldSpeak: true,
-                audioData: nil,
-                visualFeedback: HermesVisualFeedback(
-                    type: "error",
-                    content: error.localizedDescription,
-                    image: nil,
-                    actions: nil
+
+            switch responseResult {
+            case .success(let response):
+                let result = await processVisionResponse(response, command: command)
+                lastResponse = result.message
+
+                if result.shouldSpeak {
+                    await speakResponse(result.message)
+                }
+
+                return result
+
+            case .failure(let error):
+                onError?(error)
+                return HermesRouterResult(
+                    success: false,
+                    message: "Sorry, I had trouble analyzing what you're looking at. Please try again.",
+                    toolCalls: [],
+                    shouldSpeak: true,
+                    audioData: nil,
+                    visualFeedback: HermesVisualFeedback(
+                        type: "error",
+                        content: error.localizedDescription,
+                        image: nil,
+                        actions: nil
+                    )
                 )
+            }
+        }
+    }
+
+    private func processVisionResponse(_ response: HermesResponse, command: String) async -> HermesRouterResult {
+        var visualFeedback: HermesVisualFeedback?
+        if let visionAnalysis = response.visionAnalysis {
+            visualFeedback = HermesVisualFeedback(
+                type: "vision_analysis",
+                content: visionAnalysis.description,
+                image: nil,
+                actions: nil
             )
         }
+
+        return HermesRouterResult(
+            success: true,
+            message: response.message,
+            toolCalls: response.toolCalls ?? [],
+            shouldSpeak: true,
+            audioData: nil,
+            visualFeedback: visualFeedback
+        )
     }
     
     /// Determines if a regular command should include vision context
@@ -259,105 +270,157 @@ extension HermesCommandRouter {
     }
     
     // MARK: - Vision Tool Implementations
-    
+
     private func executeIdentifyObject(
         _ parameters: [String: AnyCodableValue],
         frame: ProcessedFrame
     ) async -> HermesToolResult {
-        // This would call Hermes vision API for object identification
-        // For now, return a placeholder result
-        return HermesToolResult(
-            success: true,
-            data: .dictionary([
-                "object": .string("object_name"),
-                "confidence": .double(0.95),
-                "frame": .string(frame.base64Data.prefix(100) + "...")
-            ]),
-            message: "Object identified successfully",
-            error: nil
-        )
+        let prompt = "Identify the main object in this image. Respond with the object name and a brief description."
+        do {
+            let image = processFrameToImage(frame)
+            let response = try await sendVisionPrompt(prompt, image: image)
+            return HermesToolResult(
+                success: true,
+                data: .dictionary([
+                    "object": .string(response),
+                    "confidence": .double(0.9)
+                ]),
+                message: response,
+                error: nil
+            )
+        } catch {
+            return HermesToolResult(
+                success: false,
+                data: .null,
+                message: "Failed to identify object: \(error.localizedDescription)",
+                error: error.localizedDescription
+            )
+        }
     }
-    
+
     private func executeReadText(
         _ parameters: [String: AnyCodableValue],
         frame: ProcessedFrame
     ) async -> HermesToolResult {
-        // This would call OCR service via Hermes
-        return HermesToolResult(
-            success: true,
-            data: .dictionary([
-                "text": .string("Sample text from image"),
-                "confidence": .double(0.98)
-            ]),
-            message: "Text read successfully",
-            error: nil
-        )
+        let prompt = "Read all visible text in this image. Transcribe the text exactly as it appears."
+        do {
+            let image = processFrameToImage(frame)
+            let response = try await sendVisionPrompt(prompt, image: image)
+            return HermesToolResult(
+                success: true,
+                data: .dictionary([
+                    "text": .string(response),
+                    "confidence": .double(0.95)
+                ]),
+                message: response,
+                error: nil
+            )
+        } catch {
+            return HermesToolResult(
+                success: false,
+                data: .null,
+                message: "Failed to read text: \(error.localizedDescription)",
+                error: error.localizedDescription
+            )
+        }
     }
-    
+
     private func executeRememberScene(
         _ parameters: [String: AnyCodableValue],
         frame: ProcessedFrame
     ) async -> HermesToolResult {
-        // Store in memory via Hermes
-        let memoryId = UUID().uuidString
-        let description = parameters["description"]?.stringValue ?? "Remembered scene"
-        
-        return HermesToolResult(
-            success: true,
-            data: .dictionary([
-                "memory_id": .string(memoryId),
-                "description": .string(description),
-                "timestamp": .string(ISO8601DateFormatter().string(from: Date()))
-            ]),
-            message: "Scene remembered: \(description)",
-            error: nil
-        )
+        let prompt = "Describe this scene briefly. What is happening and what objects are present?"
+        do {
+            let image = processFrameToImage(frame)
+            let description = try await sendVisionPrompt(prompt, image: image)
+            let memoryId = UUID().uuidString
+            let memoryTitle = parameters["description"]?.stringValue ?? parameters["note"]?.stringValue ?? description
+
+            MultimodalMemoryManager.shared.rememberFromFrame(
+                description: description,
+                frame: frame,
+                tags: ["vision", "remembered"]
+            )
+
+            return HermesToolResult(
+                success: true,
+                data: .dictionary([
+                    "memory_id": .string(memoryId),
+                    "description": .string(description),
+                    "timestamp": .string(ISO8601DateFormatter().string(from: Date()))
+                ]),
+                message: "Scene remembered: \(memoryTitle)",
+                error: nil
+            )
+        } catch {
+            return HermesToolResult(
+                success: false,
+                data: .null,
+                message: "Failed to remember scene: \(error.localizedDescription)",
+                error: error.localizedDescription
+            )
+        }
     }
-    
+
     private func executeDescribeScene(
         _ parameters: [String: AnyCodableValue],
         frame: ProcessedFrame
     ) async -> HermesToolResult {
-        // This would call Hermes vision API for scene description
-        return HermesToolResult(
-            success: true,
-            data: .dictionary([
-                "description": .string("A scene description would appear here"),
-                "scene_type": .string("indoor"),
-                "objects": .array([.string("object1"), .string("object2")])
-            ]),
-            message: "Scene described",
-            error: nil
-        )
+        let prompt = "Describe this scene in detail. What do you see? Include the type of scene and notable objects."
+        do {
+            let image = processFrameToImage(frame)
+            let description = try await sendVisionPrompt(prompt, image: image)
+            return HermesToolResult(
+                success: true,
+                data: .dictionary([
+                    "description": .string(description),
+                    "scene_type": .string("detected")
+                ]),
+                message: description,
+                error: nil
+            )
+        } catch {
+            return HermesToolResult(
+                success: false,
+                data: .null,
+                message: "Failed to describe scene: \(error.localizedDescription)",
+                error: error.localizedDescription
+            )
+        }
     }
-    
+
+    // MARK: - Vision Helper Methods
+
+    private func sendVisionPrompt(_ prompt: String, image: UIImage) async throws -> String {
+        let responseResult: Result<HermesResponse, Error> = await withCheckedContinuation { continuation in
+            aiService.sendVisionCommand(prompt, image: image) { result in
+                continuation.resume(returning: result)
+            }
+        }
+
+        switch responseResult {
+        case .success(let response):
+            return response.message
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    private func processFrameToImage(_ frame: ProcessedFrame) -> UIImage {
+        if let data = Data(base64Encoded: frame.base64Data),
+           let image = UIImage(data: data) {
+            return image
+        }
+        return UIImage()
+    }
+
     // MARK: - Helper Methods
-    
+
     private func speakResponse(_ message: String) async {
         do {
             try await ttsService.speak(message)
         } catch {
             print("TTS error: \(error)")
         }
-    }
-}
-
-// MARK: - HermesService Vision Extension
-
-extension HermesService {
-    
-    /// Sends a vision command to Hermes Agent
-    func sendVisionCommand(_ request: HermesVisionRequest) async throws -> HermesRouterResult {
-        // This would send the request via WebSocket and wait for response
-        // Placeholder implementation
-        
-        return HermesRouterResult(
-            success: true,
-            message: "I can see you're looking at something. Let me analyze it...",
-            toolCalls: [],
-            shouldSpeak: true,
-            audioData: nil,
-            visualFeedback: nil
-        )
     }
 }

@@ -5,8 +5,11 @@
 
 import Foundation
 import UIKit
+import AVFoundation
 import EventKit
 import MessageUI
+import UserNotifications
+import MediaPlayer
 
 // MARK: - Tool Execution Error
 
@@ -140,21 +143,24 @@ class NotesExecutor: BaseToolExecutor {
         missing.merge(requireParameter("content", from: parameters, prompt: "What should the note say?")) { _, new in new }
         return missing
     }
-    
+
     override func execute(parameters: [String: Any]) async throws -> ToolExecutionResult {
-        // Apple Notes doesn't have a public API, so we use share sheet or Notes URL scheme
         let title = parameters["title"] as? String ?? "Note from HermeSpecs"
         let content = parameters["content"] as? String ?? ""
         let fullContent = "\(title)\n\n\(content)"
-        
-        // Create a notes URL
-        let notesURL = "mobilenotes://"
-        
-        // For now, return success with instructions
-        // In production, this would use the share sheet
+
+        // Copy content to pasteboard and open Notes
+        UIPasteboard.general.string = fullContent
+
+        if let url = URL(string: "mobilenotes://") {
+            await MainActor.run {
+                UIApplication.shared.open(url)
+            }
+        }
+
         return ToolExecutionResult(
             success: true,
-            message: "Note created: \(title)",
+            message: "Note created: \(title). Content copied to clipboard — paste in Notes.",
             detailedMessage: fullContent,
             data: ["title": title, "content": content],
             error: nil,
@@ -174,17 +180,23 @@ class iMessageExecutor: BaseToolExecutor {
         missing.merge(requireParameter("message", from: parameters, prompt: "What would you like to say?")) { _, new in new }
         return missing
     }
-    
+
     override func execute(parameters: [String: Any]) async throws -> ToolExecutionResult {
         guard let recipient = parameters["recipient"] as? String,
               let message = parameters["message"] as? String else {
             throw ToolExecutionError.invalidParameters
         }
-        
-        // Create SMS URL scheme
+
+        // Create and open SMS URL scheme
         let encodedMessage = message.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let smsURL = "sms:\(recipient)&body=\(encodedMessage)"
-        
+        let smsURLString = "sms:\(recipient)?body=\(encodedMessage)"
+
+        if let url = URL(string: smsURLString) {
+            await MainActor.run {
+                UIApplication.shared.open(url)
+            }
+        }
+
         return ToolExecutionResult(
             success: true,
             message: "Opening iMessage to \(recipient)",
@@ -192,7 +204,7 @@ class iMessageExecutor: BaseToolExecutor {
             data: [
                 "recipient": recipient,
                 "message": message,
-                "sms_url": smsURL
+                "sms_url": smsURLString
             ],
             error: nil,
             followUpActions: [
@@ -210,23 +222,41 @@ class TimerExecutor: BaseToolExecutor {
         missing.merge(requireParameter("duration", from: parameters, prompt: "How long should I set the timer for?")) { _, new in new }
         return missing
     }
-    
+
     override func execute(parameters: [String: Any]) async throws -> ToolExecutionResult {
         guard let durationString = parameters["duration"] as? String else {
             throw ToolExecutionError.invalidParameters
         }
-        
+
         let seconds = parseDuration(durationString)
         let label = parameters["label"] as? String ?? "Timer"
-        
-        // Create timer URL scheme for Clock app
-        let timerURL = "clock-timer://?duration=\(seconds)&label=\(label.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-        
+
+        // Open Clock app timer
+        let timerURL = "clock-timer://"
+        if let url = URL(string: timerURL) {
+            await MainActor.run {
+                UIApplication.shared.open(url)
+            }
+        }
+
+        // Schedule a local notification as backup
+        let content = UNMutableNotificationContent()
+        content.title = "Timer"
+        content.body = label.isEmpty ? "Your timer is done!" : "\(label) — timer is done!"
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(seconds), repeats: false)
+        let request = UNNotificationRequest(identifier: "hermespecs-timer-\(UUID().uuidString)", content: content, trigger: trigger)
+
+        await MainActor.run {
+            UNUserNotificationCenter.current().add(request)
+        }
+
         let timeString = formatDuration(seconds)
-        
+
         return ToolExecutionResult(
             success: true,
-            message: "Timer set for \(timeString)",
+            message: "Timer set for \(timeString). You'll be notified when it's done.",
             detailedMessage: label,
             data: [
                 "duration": seconds,
@@ -280,51 +310,68 @@ class MusicControlExecutor: BaseToolExecutor {
         missing.merge(requireParameter("action", from: parameters, prompt: "What would you like to do? Play, pause, skip?")) { _, new in new }
         return missing
     }
-    
+
     override func execute(parameters: [String: Any]) async throws -> ToolExecutionResult {
         guard let action = parameters["action"] as? String else {
             throw ToolExecutionError.invalidParameters
         }
-        
+
         let lowercased = action.lowercased()
-        var command = ""
         var message = ""
-        
+
+        let player = MPMusicPlayerController.applicationQueuePlayer
+
         switch lowercased {
         case "play":
-            command = "play"
-            message = "Playing music"
+            if let query = parameters["query"] as? String, !query.isEmpty {
+                // Play specific song/artist via Music app URL
+                let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                if let url = URL(string: "music://search?term=\(encodedQuery)") {
+                    await MainActor.run { UIApplication.shared.open(url) }
+                }
+                message = "Searching for \(query) in Music"
+            } else {
+                player.play()
+                message = "Playing music"
+            }
         case "pause", "stop":
-            command = "pause"
+            player.pause()
             message = "Music paused"
         case "next", "skip", "forward":
-            command = "next"
+            player.skipToNextItem()
             message = "Skipping to next track"
         case "previous", "back":
-            command = "previous"
+            player.skipToPreviousItem()
             message = "Going back to previous track"
         case "volume up", "louder":
-            command = "volume_up"
+            await MainActor.run {
+                MPVolumeView.setVolume(to: min(1.0, MPVolumeView.currentVolume + 0.15))
+            }
             message = "Volume increased"
         case "volume down", "quieter":
-            command = "volume_down"
+            await MainActor.run {
+                MPVolumeView.setVolume(to: max(0.0, MPVolumeView.currentVolume - 0.15))
+            }
             message = "Volume decreased"
         default:
             if let query = parameters["query"] as? String {
-                command = "play_\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-                message = "Playing \(query)"
+                let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+                if let url = URL(string: "music://search?term=\(encodedQuery)") {
+                    await MainActor.run { UIApplication.shared.open(url) }
+                }
+                message = "Searching for \(query) in Music"
             } else {
-                command = "play"
+                player.play()
                 message = "Playing music"
             }
         }
-        
+
         return ToolExecutionResult(
             success: true,
             message: message,
             detailedMessage: nil,
             data: [
-                "action": command,
+                "action": action,
                 "query": parameters["query"] as? String
             ],
             error: nil,
@@ -439,9 +486,26 @@ class VoiceConfirmationManager {
             
         case "music_control":
             return "Done"
-            
+
         default:
             return "\(tool.name) completed"
         }
+    }
+}
+
+// MARK: - MPVolumeView Volume Helper
+
+extension MPVolumeView {
+    static func currentVolume() -> Float {
+        let audioSession = AVAudioSession.sharedInstance()
+        return audioSession.outputVolume
+    }
+
+    static func setVolume(to volume: Float) {
+        let volumeView = MPVolumeView()
+        if let slider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider {
+            slider.value = volume
+        }
+        volumeView.removeFromSuperview()
     }
 }

@@ -19,7 +19,7 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // Home - Feature entry
-            TurboMetaHomeView(streamViewModel: streamViewModel, wearablesViewModel: wearablesViewModel, apiKey: apiKey)
+            HerMeSpecsHomeView(streamViewModel: streamViewModel, wearablesViewModel: wearablesViewModel, apiKey: apiKey)
                 .tabItem {
                     Label("tab.home".localized, systemImage: "house.fill")
                 }

@@ -24,7 +24,7 @@ import MWDATMockDevice
 #endif
 
 @main
-struct TurboMetaApp: App {
+struct HerMeSpecsApp: App {
   #if DEBUG
   // Debug menu for simulating device connections during development
   @StateObject private var debugMenuViewModel = DebugMenuViewModel(mockDeviceKit: MockDeviceKit.shared)
@@ -35,9 +35,9 @@ struct TurboMetaApp: App {
   init() {
     do {
       try Wearables.configure()
-      print("✅ [TurboMeta] Wearables SDK configured successfully")
+      print("[HerMeSpecs] Wearables SDK configured successfully")
     } catch {
-      print("❌ [TurboMeta] Wearables.configure() failed: \(error) | \(error.localizedDescription)")
+      print("[HerMeSpecs] Wearables.configure() failed: \(error) | \(error.localizedDescription)")
     }
     let wearables = Wearables.shared
     self.wearables = wearables

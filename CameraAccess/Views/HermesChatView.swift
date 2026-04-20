@@ -5,6 +5,8 @@
  */
 
 import SwiftUI
+import Speech
+import AVFoundation
 
 struct HermesChatMessage: Identifiable {
     let id = UUID()
@@ -17,7 +19,7 @@ struct HermesChatMessage: Identifiable {
 
 struct HermesChatView: View {
     @ObservedObject var streamViewModel: StreamSessionViewModel
-    @ObservedObject private var hermesService = HermesService.shared
+    @ObservedObject private var aiService = HermesAIService.shared
     @ObservedObject private var router = HermesCommandRouter.shared
     @Environment(\.dismiss) private var dismiss
 
@@ -32,6 +34,13 @@ struct HermesChatView: View {
     // ASR Service for voice input
     @State private var asrText = ""
     @State private var asrPartial = ""
+
+    // Speech recognition
+    @State private var speechRecognizer: SFSpeechRecognizer?
+    @State private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    @State private var recognitionTask: SFSpeechRecognitionTask?
+    @State private var audioEngine: AVAudioEngine?
+    @State private var hasSpeechPermission = false
 
     var body: some View {
         NavigationView {
@@ -57,7 +66,7 @@ struct HermesChatView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 6) {
-                        ConnectionStatusIndicator(state: hermesService.connectionState)
+                        ConnectionStatusIndicator(state: aiService.connectionState)
                         Button {
                             showSettings = true
                         } label: {
@@ -71,10 +80,10 @@ struct HermesChatView: View {
         .onAppear {
             setupCallbacks()
             router.setStreamViewModel(streamViewModel)
-            if hermesService.connectionState != .connected,
-               !hermesService.serverHost.isEmpty {
-                hermesService.connect()
+            if !aiService.hasAPIKeyConfigured && aiService.selectedProvider.requiresAPIKey {
+                // Prompt user to configure API key
             }
+            aiService.connect()
         }
         .onDisappear {
             cleanupCallbacks()
@@ -88,38 +97,27 @@ struct HermesChatView: View {
 
     private var connectionStatusBanner: some View {
         Group {
-            if hermesService.connectionState != .connected {
+            if !aiService.hasAPIKeyConfigured && aiService.selectedProvider.requiresAPIKey {
                 HStack(spacing: 8) {
-                    ProgressView().scaleEffect(0.8)
-                    Text(connectionStatusText)
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    Text("No API key — configure in Settings")
                         .font(.system(size: 13))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(statusBannerColor.opacity(0.15))
+                .background(Color.orange.opacity(0.15))
+            } else if case .error(let message) = aiService.connectionState {
+                HStack(spacing: 8) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.red)
+                    Text(message)
+                        .font(.system(size: 13))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(Color.red.opacity(0.15))
             }
-        }
-    }
-
-    private var connectionStatusText: String {
-        switch hermesService.connectionState {
-        case .connecting:
-            return "Connecting to Hermes..."
-        case .authenticating:
-            return "Authenticating..."
-        case .error(let message):
-            return "Error: \(message)"
-        default:
-            return "Disconnected"
-        }
-    }
-
-    private var statusBannerColor: Color {
-        switch hermesService.connectionState {
-        case .error:
-            return .red
-        default:
-            return .orange
         }
     }
 
@@ -189,7 +187,7 @@ struct HermesChatView: View {
             VStack(alignment: .leading, spacing: 8) {
                 WelcomeRow(icon: "mic.fill", text: "Tap the mic and speak naturally")
                 WelcomeRow(icon: "camera.fill", text: "Use camera for visual queries")
-                WelcomeRow(icon: "hammer.fill", text: "Execute 80+ tools via voice")
+                WelcomeRow(icon: "hammer.fill", text: "Execute tools via voice")
             }
             .padding(.top, 8)
         }
@@ -226,10 +224,10 @@ struct HermesChatView: View {
                         Text("Snap")
                             .font(.system(size: 10))
                     }
-                    .foregroundColor(isSending || !hermesService.connectionState.isConnected ? .gray : .purple)
+                    .foregroundColor(isSending || !aiService.hasAPIKeyConfigured ? .gray : .purple)
                     .frame(width: 60, height: 60)
                 }
-                .disabled(isSending || !hermesService.connectionState.isConnected)
+                .disabled(isSending || !aiService.hasAPIKeyConfigured)
 
                 // Voice button
                 Button {
@@ -258,7 +256,7 @@ struct HermesChatView: View {
                             .foregroundColor(.white)
                     }
                 }
-                .disabled(!hermesService.connectionState.isConnected)
+                .disabled(!aiService.hasAPIKeyConfigured)
 
                 // Text input toggle
                 Button {
@@ -289,9 +287,9 @@ struct HermesChatView: View {
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.system(size: 30))
-                            .foregroundColor(inputText.isEmpty || !hermesService.connectionState.isConnected ? .gray : .purple)
+                            .foregroundColor(inputText.isEmpty || !aiService.hasAPIKeyConfigured ? .gray : .purple)
                     }
-                    .disabled(inputText.isEmpty || !hermesService.connectionState.isConnected)
+                    .disabled(inputText.isEmpty || !aiService.hasAPIKeyConfigured)
                 }
                 .padding(.horizontal, 16)
             }
@@ -365,7 +363,7 @@ struct HermesChatView: View {
     }
 
     private func captureAndSend() async {
-        guard hermesService.connectionState.isConnected else { return }
+        guard aiService.hasAPIKeyConfigured else { return }
 
         isSending = true
         defer { isSending = false }
@@ -407,18 +405,71 @@ struct HermesChatView: View {
     }
 
     private func startListening() {
-        // For now, simulate voice input
-        // TODO: Integrate with actual ASR service
+        SFSpeechRecognizer.requestAuthorization { status in
+            guard status == .authorized else {
+                DispatchQueue.main.async {
+                    self.asrText = "Speech recognition not authorized. Please enable in Settings."
+                    self.isListening = false
+                }
+                return
+            }
+            DispatchQueue.main.async {
+                self.beginRecording()
+            }
+        }
+    }
+
+    private func beginRecording() {
         isListening = true
         asrText = ""
         asrPartial = ""
 
-        // Simulated listening - replace with actual ASR
+        // Stop any existing recording
+        stopRecordingEngine()
+
+        audioEngine = AVAudioEngine()
+        speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+
+        guard let audioEngine = audioEngine,
+              let speechRecognizer = speechRecognizer else {
+            isListening = false
+            return
+        }
+
+        let inputNode = audioEngine.inputNode
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        guard let recognitionRequest = recognitionRequest else {
+            isListening = false
+            return
+        }
+        recognitionRequest.shouldReportPartialResults = true
+
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { [weak self] result, error in
+            guard let self else { return }
+            if let result = result {
+                self.asrText = result.bestTranscription.formattedString
+                if result.isFinal {
+                    self.stopListening()
+                }
+            }
+            if error != nil {
+                self.stopListening()
+            }
+        }
+
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] buffer, _ in
+            self?.recognitionRequest?.append(buffer)
+        }
+
+        audioEngine.prepare()
+        try? audioEngine.start()
+
+        // Auto-stop after 60 seconds
         Task {
-            try? await Task.sleep(nanoseconds: 2 * 1_000_000_000)
-            if isListening {
-                asrText = "What am I looking at?"
-                stopListening()
+            try? await Task.sleep(nanoseconds: 60 * 1_000_000_000)
+            if self.isListening {
+                self.stopListening()
             }
         }
     }
@@ -426,6 +477,16 @@ struct HermesChatView: View {
     private func stopListening() {
         isListening = false
         asrPartial = ""
+        stopRecordingEngine()
+    }
+
+    private func stopRecordingEngine() {
+        audioEngine?.inputNode.removeTap(onBus: 0)
+        audioEngine?.stop()
+        recognitionRequest?.endAudio()
+        recognitionRequest = nil
+        recognitionTask = nil
+        audioEngine = nil
     }
 
     private func sendASRText() {
@@ -577,8 +638,16 @@ struct HermesChatView_Previews: PreviewProvider {
 
 // Simple mock for previews
 private class MockWearables: WearablesInterface {
+    var devices: [DeviceIdentifier] = []
+    var registrationState: RegistrationState = .registered
+
     func checkPermissionStatus(_ permission: Permission) async throws -> PermissionStatus { .granted }
     func requestPermission(_ permission: Permission) async throws -> PermissionStatus { .granted }
     func startDeviceScan() {}
     func stopDeviceScan() {}
+    func startRegistration() async throws {}
+    func startUnregistration() async throws {}
+    func deviceForIdentifier(_ identifier: DeviceIdentifier) -> WearableDeviceProtocol? { nil }
+    func registrationStateStream() -> AsyncStream<RegistrationState> { AsyncStream { _ in } }
+    func devicesStream() -> AsyncStream<[DeviceIdentifier]> { AsyncStream { _ in } }
 }

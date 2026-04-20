@@ -254,19 +254,20 @@ class ConnectionRecoveryManager: ObservableObject {
             completion(.failure(.networkUnavailable))
             return
         }
-        
-        // This would integrate with HermesService to actually connect
-        // For now, simulate connection attempt
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-            // Simulate random success/failure for testing
-            let success = Bool.random()
-            
-            DispatchQueue.main.async {
-                if success {
+
+        // Check if AI service is configured
+        Task { @MainActor in
+            let aiService = HermesAIService.shared
+            if aiService.hasAPIKeyConfigured {
+                // Verify connectivity with a test request
+                let reachable = await aiService.testConnection()
+                if reachable {
                     completion(.success(()))
                 } else {
                     completion(.failure(.serverUnreachable))
                 }
+            } else {
+                completion(.failure(.authenticationFailed))
             }
         }
     }

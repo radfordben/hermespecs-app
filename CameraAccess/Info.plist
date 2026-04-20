@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>TurboMeta</string>
+	<string>HerMeSpecs</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>TurboMeta</string>
+	<string>HerMeSpecs</string>
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,7 +27,7 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>turbometa</string>
+				<string>hermespecs</string>
 			</array>
 		</dict>
 	</array>
@@ -40,7 +40,7 @@
 	<key>MWDAT</key>
 	<dict>
 		<key>AppLinkURLScheme</key>
-		<string>turbometa://</string>
+		<string>hermespecs://</string>
 		<key>MetaAppID</key>
 		<string>$(META_APP_ID)</string>
 		<key>ClientToken</key>
@@ -54,13 +54,21 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Needed to connect to Meta AI Glasses</string>
+	<string>HerMeSpecs needs Bluetooth to connect to your Meta Ray-Ban smart glasses.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>HerMeSpecs needs access to Contacts to find recipients for messages.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>HerMeSpecs needs your location to tag memories with location information.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>TurboMeta 需要访问麦克风以实现与智能眼镜的实时语音对话功能。</string>
+	<string>HerMeSpecs needs microphone access for voice commands and live AI conversations.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>TurboMeta 需要访问相册以保存从智能眼镜拍摄的照片。</string>
+	<string>HerMeSpecs needs photo library access to save photos captured from your glasses.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>HerMeSpecs needs access to Reminders to create reminders for you.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>HerMeSpecs needs speech recognition to understand your voice commands.</string>
 	<key>NSSiriUsageDescription</key>
-	<string>TurboMeta 需要 Siri 权限以支持语音快捷指令触发快速识图功能。</string>
+	<string>HerMeSpecs needs Siri access for voice shortcut triggers.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

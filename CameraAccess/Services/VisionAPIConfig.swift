@@ -54,8 +54,8 @@ struct VisionAPIConfig {
 
         // Add OpenRouter-specific headers
         if provider == .openrouter {
-            headers["HTTP-Referer"] = "https://turbometa.app"
-            headers["X-Title"] = "TurboMeta"
+            headers["HTTP-Referer"] = "https://hermespecs.app"
+            headers["X-Title"] = "HerMeSpecs"
         }
 
         return headers

@@ -32,7 +32,7 @@ struct ConversationRecord: Identifiable, Codable {
             let content = firstUserMessage.content
             return content.count > 30 ? String(content.prefix(30)) + "..." : content
         }
-        return "AI 对话"
+        return "AI Conversation"
     }
 
     var summary: String {
@@ -99,7 +99,5 @@ extension ConversationMessage: Codable {
 
 // Add timestamp to ConversationMessage if not present
 extension ConversationMessage {
-    init(id: UUID = UUID(), role: MessageRole, content: String, timestamp: Date = Date()) {
-        self.init(role: role, content: content)
-    }
+    // The init with id and timestamp is now defined on the struct itself
 }

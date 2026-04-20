@@ -35,7 +35,7 @@ struct PermissionsRequestView: View {
                         .font(AppTypography.title)
                         .foregroundColor(AppColors.textPrimary)
 
-                    Text("TurboMeta 需要以下权限才能正常工作")
+                    Text("HerMeSpecs needs the following permissions to work properly")
                         .font(AppTypography.body)
                         .foregroundColor(AppColors.textSecondary)
                         .multilineTextAlignment(.center)

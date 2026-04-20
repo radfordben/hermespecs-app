@@ -1,11 +1,11 @@
 /*
- * TurboMeta Home View
- * 主页 - 功能入口
+ * HerMeSpecs Home View
+ * Home screen - feature entry points
  */
 
 import SwiftUI
 
-struct TurboMetaHomeView: View {
+struct HerMeSpecsHomeView: View {
     @ObservedObject var streamViewModel: StreamSessionViewModel
     @ObservedObject var wearablesViewModel: WearablesViewModel
     @StateObject private var quickVisionManager = QuickVisionManager.shared
@@ -21,7 +21,7 @@ struct TurboMetaHomeView: View {
     @State private var showOpenClaw = false
     @State private var showHermes = false
     @ObservedObject private var openClawService = OpenClawNodeService.shared
-    @ObservedObject private var hermesService = HermesService.shared
+    @ObservedObject private var aiService = HermesAIService.shared
 
     var body: some View {
         NavigationView {
@@ -87,7 +87,7 @@ struct TurboMetaHomeView: View {
 
                                 FeatureCard(
                                     title: "HermeSpecs",
-                                    subtitle: hermesService.connectionState.isConnected ? "Connected" : "AI Assistant",
+                                    subtitle: aiService.hasAPIKeyConfigured ? "Ready" : "Not configured",
                                     icon: "eyeglasses",
                                     gradient: [Color.purple, Color.indigo]
                                 ) {
@@ -179,11 +179,11 @@ struct TurboMetaHomeView: View {
                 openClawService.connect()
             }
 
-            // Hermes 自动连接（如果有保存的配置）
-            if hermesService.connectionState == .disconnected,
-               !hermesService.serverHost.isEmpty,
-               hermesService.loadAPIToken() != nil {
-                hermesService.connect()
+            // Connect AI service if configured
+            if !aiService.hasAPIKeyConfigured && !aiService.selectedProvider.requiresAPIKey {
+                aiService.connect()
+            } else if aiService.hasAPIKeyConfigured {
+                aiService.connect()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .liveAITriggered)) { _ in

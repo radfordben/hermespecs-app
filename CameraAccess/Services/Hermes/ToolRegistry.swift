@@ -1,6 +1,6 @@
 /*
  * Hermes Tool Registry
- * Central registry for all 80+ tools available in HermeSpecs
+ * Central registry for tools available in HerMeSpecs
  * Manages tool metadata, execution, and voice-optimized responses
  */
 

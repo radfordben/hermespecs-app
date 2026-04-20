@@ -57,6 +57,7 @@ struct HermesToolResult: Codable {
     let success: Bool
     let message: String
     let data: [String: AnyCodableValue]?
+    let error: String?
 }
 
 struct HermesVisionAnalysis: Codable {
@@ -95,12 +96,7 @@ struct HermesLocation: Codable {
     let accuracy: Double?
 }
 
-struct HermesAttachment: Codable {
-    let type: String  // "image", "audio"
-    let mimeType: String
-    let content: String  // base64 encoded
-    let metadata: [String: String]?
-}
+// HermesAttachment is defined in HermesModels.swift
 
 // MARK: - Protocol
 
@@ -250,11 +246,9 @@ class HermesService: NSObject, ObservableObject, HermesServiceProtocol {
         let attachment = HermesAttachment(
             type: "image",
             mimeType: "image/jpeg",
-            content: jpegData.base64EncodedString(),
-            metadata: [
-                "width": "\(Int(resizedImage.size.width))",
-                "height": "\(Int(resizedImage.size.height))"
-            ]
+            data: jpegData.base64EncodedString(),
+            filename: nil,
+            dimensions: ImageDimensions(width: resizedImage.size.width, height: resizedImage.size.height)
         )
 
         let requestId = UUID().uuidString
@@ -289,11 +283,9 @@ class HermesService: NSObject, ObservableObject, HermesServiceProtocol {
         let attachment = HermesAttachment(
             type: "audio",
             mimeType: "audio/pcm",
-            content: audioData.base64EncodedString(),
-            metadata: [
-                "sample_rate": "16000",
-                "channels": "1"
-            ]
+            data: audioData.base64EncodedString(),
+            filename: nil,
+            dimensions: nil
         )
 
         let requestId = UUID().uuidString

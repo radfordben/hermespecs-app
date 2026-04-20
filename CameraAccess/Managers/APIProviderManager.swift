@@ -315,7 +315,7 @@ class APIProviderManager: ObservableObject {
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            request.setValue("TurboMeta", forHTTPHeaderField: "X-Title")
+            request.setValue("HerMeSpecs", forHTTPHeaderField: "X-Title")
             request.timeoutInterval = 30
 
             let (data, response) = try await URLSession.shared.data(for: request)

@@ -343,10 +343,17 @@ class OmniRealtimeViewModel: ObservableObject {
 // MARK: - Conversation Message
 
 struct ConversationMessage: Identifiable {
-    let id = UUID()
+    let id: UUID
     let role: MessageRole
     let content: String
-    let timestamp = Date()
+    let timestamp: Date
+
+    init(id: UUID = UUID(), role: MessageRole, content: String, timestamp: Date = Date()) {
+        self.id = id
+        self.role = role
+        self.content = content
+        self.timestamp = timestamp
+    }
 
     enum MessageRole {
         case user

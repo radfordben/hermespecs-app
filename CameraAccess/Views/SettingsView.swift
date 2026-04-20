@@ -451,7 +451,7 @@ struct SettingsView: View {
     }
 
     private var hermesStatusColor: Color {
-        switch HermesService.shared.connectionState {
+        switch HermesAIService.shared.connectionState {
         case .connected: return .green
         case .connecting, .authenticating: return .orange
         case .error: return .red
@@ -460,12 +460,12 @@ struct SettingsView: View {
     }
 
     private var hermesStatusText: String {
-        switch HermesService.shared.connectionState {
-        case .connected: return "Connected"
+        switch HermesAIService.shared.connectionState {
+        case .connected: return "Ready"
         case .connecting: return "Connecting..."
         case .authenticating: return "Authenticating..."
         case .error: return "Error"
-        case .disconnected: return "Disconnected"
+        case .disconnected: return "Not configured"
         }
     }
 

@@ -9,6 +9,27 @@ import AVFoundation
 import VideoToolbox
 import Combine
 
+// MARK: - VTCompression Output Callback (must be a free function for C interop)
+
+private func hermesCompressionOutputCallback(
+    _ refcon: UnsafeMutableRawPointer?,
+    _ status: OSStatus,
+    _ infoFlags: VTEncodeInfoFlags,
+    _ sampleBuffer: CMSampleBuffer?
+) -> Void {
+    guard status == noErr, let sampleBuffer = sampleBuffer else { return }
+
+    let manager = Unmanaged<AdaptiveStreamManager>.fromOpaque(refcon!).takeUnretainedValue()
+
+    if let data = manager.sampleBufferToData(sampleBuffer) {
+        manager.updateBitrate(Int64(data.count))
+
+        DispatchQueue.main.async {
+            manager.onFrameCompressed?(data, Date().timeIntervalSince1970)
+        }
+    }
+}
+
 @MainActor
 class AdaptiveStreamManager: ObservableObject {
     static let shared = AdaptiveStreamManager()
@@ -198,8 +219,8 @@ class AdaptiveStreamManager: ObservableObject {
             encoderSpecification: nil,
             imageBufferAttributes: nil,
             compressedDataAllocator: nil,
-            outputCallback: nil,
-            refcon: nil,
+            outputCallback: hermesCompressionOutputCallback,
+            refcon: Unmanaged.passUnretained(self).toOpaque(),
             compressionSessionOut: &compressionSession
         )
         
@@ -225,39 +246,28 @@ class AdaptiveStreamManager: ObservableObject {
     
     func compressFrame(_ sampleBuffer: CMSampleBuffer) {
         guard let session = compressionSession else {
-            // Fall back to JPEG compression
             compressFrameJPEG(sampleBuffer)
             return
         }
-        
+
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
         }
-        
+
         let presentationTimeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
         let duration = CMSampleBufferGetDuration(sampleBuffer)
-        
-        VTCompressionSessionEncodeFrame(
+
+        let status = VTCompressionSessionEncodeFrame(
             session,
             imageBuffer: imageBuffer,
             presentationTimeStamp: presentationTimeStamp,
             duration: duration,
             frameProperties: nil,
             infoFlagsOut: nil
-        ) { [weak self] status, infoFlags, sampleBuffer in
-            guard status == noErr, let sampleBuffer = sampleBuffer else {
-                return
-            }
-            
-            // Extract compressed data
-            if let data = self?.sampleBufferToData(sampleBuffer) {
-                let sizeKB = Double(data.count) / 1024.0
-                self?.updateBitrate(Int64(data.count))
-                
-                DispatchQueue.main.async {
-                    self?.onFrameCompressed?(data, Date().timeIntervalSince1970)
-                }
-            }
+        )
+
+        if status != noErr {
+            print("VTCompressionSessionEncodeFrame error: \(status)")
         }
     }
     
@@ -275,7 +285,7 @@ class AdaptiveStreamManager: ObservableObject {
         }
     }
     
-    private func sampleBufferToData(_ sampleBuffer: CMSampleBuffer) -> Data? {
+    func sampleBufferToData(_ sampleBuffer: CMSampleBuffer) -> Data? {
         guard let dataBuffer = CMSampleBufferGetDataBuffer(sampleBuffer) else {
             return nil
         }
@@ -334,7 +344,7 @@ class AdaptiveStreamManager: ObservableObject {
         print("Adapted quality to \(currentQuality), compression: \(compressionRatio)")
     }
     
-    private func updateBitrate(_ bytes: Int64) {
+    func updateBitrate(_ bytes: Int64) {
         bytesTransmitted += bytes
         
         // Calculate bitrate over last 10 seconds

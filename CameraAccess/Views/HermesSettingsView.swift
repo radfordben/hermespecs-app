@@ -1,90 +1,110 @@
 /*
  * Hermes Settings View
- * Configure Hermes Agent connection settings
+ * Configure AI provider settings for HerMeSpecs
  */
 
 import SwiftUI
 
 struct HermesSettingsView: View {
-    @ObservedObject private var hermesService = HermesService.shared
+    @ObservedObject private var aiService = HermesAIService.shared
     @ObservedObject private var router = HermesCommandRouter.shared
     @Environment(\.dismiss) private var dismiss
 
-    @State private var serverHost: String = ""
-    @State private var serverPort: String = ""
-    @State private var apiToken: String = ""
-    @State private var useSecureConnection: Bool = false
-    @State private var showToken: Bool = false
+    @State private var selectedProvider: HermesAIProvider = .ollama
+    @State private var selectedModel: String = ""
+    @State private var serverHost: String = "localhost"
+    @State private var serverPort: String = "11434"
+    @State private var apiKey: String = ""
+    @State private var showAPIKey: Bool = false
     @State private var isTestingConnection: Bool = false
     @State private var testResult: String?
     @State private var testSuccess: Bool = false
-    @State private var showResetConfirmation: Bool = false
+    @State private var availableModels: [String] = []
 
     var body: some View {
         NavigationView {
             Form {
-                // MARK: - Connection Status
-                Section(header: Text("hermes.settings.status".localized)) {
-                    HStack {
-                        ConnectionStatusIndicator(state: hermesService.connectionState)
-                        Spacer()
-                        if hermesService.connectionState.isConnected {
-                            Button("hermes.settings.disconnect".localized) {
-                                hermesService.disconnect()
-                            }
-                            .foregroundColor(.red)
-                        } else {
-                            Button("hermes.settings.connect".localized) {
-                                saveAndConnect()
-                            }
-                            .disabled(serverHost.isEmpty)
+                // MARK: - AI Provider
+                Section(header: Text("AI Provider")) {
+                    Picker("Provider", selection: $selectedProvider) {
+                        ForEach(HermesAIProvider.allCases, id: \.self) { provider in
+                            Text(provider.displayName).tag(provider)
                         }
                     }
-
-                    if case .error(let message) = hermesService.connectionState {
-                        Text(message)
-                            .font(.caption)
-                            .foregroundColor(.red)
+                    .onChange(of: selectedProvider) { _ in
+                        updateProviderDefaults()
                     }
                 }
 
-                // MARK: - Server Configuration
-                Section(header: Text("hermes.settings.server".localized)) {
-                    TextField("hermes.settings.host".localized, text: $serverHost)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .keyboardType(.URL)
-
-                    TextField("hermes.settings.port".localized, text: $serverPort)
-                        .keyboardType(.numberPad)
-
-                    Toggle("hermes.settings.secure".localized, isOn: $useSecureConnection)
-                }
-
-                // MARK: - Authentication
-                Section(header: Text("hermes.settings.auth".localized)) {
-                    HStack {
-                        if showToken {
-                            TextField("hermes.settings.token".localized, text: $apiToken)
-                                .autocapitalization(.none)
-                                .disableAutocorrection(true)
-                        } else {
-                            SecureField("hermes.settings.token".localized, text: $apiToken)
-                                .autocapitalization(.none)
-                                .disableAutocorrection(true)
+                // MARK: - Model Selection
+                Section(header: Text("Model")) {
+                    if availableModels.count > 1 {
+                        Picker("Model", selection: $selectedModel) {
+                            ForEach(availableModels, id: \.self) { model in
+                                Text(model).tag(model)
+                            }
                         }
-
-                        Button(action: { showToken.toggle() }) {
-                            Image(systemName: showToken ? "eye.slash" : "eye")
-                                .foregroundColor(.gray)
-                        }
+                    } else {
+                        TextField("Model name", text: $selectedModel)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
                     }
 
-                    if !apiToken.isEmpty {
-                        Button("hermes.settings.clear_token".localized) {
-                            apiToken = ""
+                    if selectedProvider == .ollama {
+                        Button("Refresh Models") {
+                            Task { await refreshModels() }
                         }
-                        .foregroundColor(.red)
+                    }
+                }
+
+                // MARK: - Ollama Host (only for Ollama)
+                if selectedProvider == .ollama {
+                    Section(header: Text("Ollama Server")) {
+                        TextField("Host", text: $serverHost)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .keyboardType(.URL)
+
+                        TextField("Port", text: $serverPort)
+                            .keyboardType(.numberPad)
+                    }
+                }
+
+                // MARK: - API Key (for cloud providers)
+                if selectedProvider.requiresAPIKey {
+                    Section(header: Text("API Key")) {
+                        HStack {
+                            if showAPIKey {
+                                TextField("API Key", text: $apiKey)
+                                    .autocapitalization(.none)
+                                    .disableAutocorrection(true)
+                            } else {
+                                SecureField("API Key", text: $apiKey)
+                                    .autocapitalization(.none)
+                                    .disableAutocorrection(true)
+                            }
+
+                            Button(action: { showAPIKey.toggle() }) {
+                                Image(systemName: showAPIKey ? "eye.slash" : "eye")
+                                    .foregroundColor(.gray)
+                            }
+                        }
+
+                        if !apiKey.isEmpty {
+                            Button("Clear API Key") {
+                                apiKey = ""
+                            }
+                            .foregroundColor(.red)
+                        }
+
+                        Link(destination: URL(string: selectedProvider.apiKeyHelpURL)!) {
+                            HStack {
+                                Text("Get API Key")
+                                Spacer()
+                                Image(systemName: "arrow.up.right.square")
+                                    .foregroundColor(.gray)
+                            }
+                        }
                     }
                 }
 
@@ -92,7 +112,7 @@ struct HermesSettingsView: View {
                 Section {
                     Button(action: testConnection) {
                         HStack {
-                            Text("hermes.settings.test".localized)
+                            Text("Test Connection")
                             Spacer()
                             if isTestingConnection {
                                 ProgressView()
@@ -100,7 +120,7 @@ struct HermesSettingsView: View {
                             }
                         }
                     }
-                    .disabled(serverHost.isEmpty || isTestingConnection)
+                    .disabled(isTestingConnection)
 
                     if let result = testResult {
                         Text(result)
@@ -109,33 +129,29 @@ struct HermesSettingsView: View {
                     }
                 }
 
-                // MARK: - Session Info
-                Section(header: Text("hermes.settings.session".localized)) {
+                // MARK: - Device Info
+                Section(header: Text("Device")) {
                     HStack {
-                        Text("hermes.settings.session_id".localized)
+                        Text("Device ID")
                         Spacer()
-                        Text(hermesService.currentSessionId.prefix(8))
+                        Text(aiService.deviceId)
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
 
                     HStack {
-                        Text("hermes.settings.device_id".localized)
+                        Text("Provider URL")
                         Spacer()
-                        Text(hermesService.deviceId)
-                            .font(.caption)
+                        Text(aiService.baseURL)
+                            .font(.caption2)
                             .foregroundColor(.gray)
+                            .lineLimit(1)
                     }
-
-                    Button("hermes.settings.reset_session".localized) {
-                        showResetConfirmation = true
-                    }
-                    .foregroundColor(.orange)
                 }
 
                 // MARK: - Recent Activity
                 if !router.recentToolCalls.isEmpty {
-                    Section(header: Text("hermes.settings.recent_activity".localized)) {
+                    Section(header: Text("Recent Activity")) {
                         ForEach(router.recentToolCalls.prefix(5), id: \.tool) { toolCall in
                             HStack {
                                 Image(systemName: "hammer.fill")
@@ -149,17 +165,17 @@ struct HermesSettingsView: View {
                 }
 
                 // MARK: - About
-                Section(header: Text("hermes.settings.about".localized)) {
+                Section(header: Text("About")) {
                     HStack {
-                        Text("hermes.settings.version".localized)
+                        Text("Version")
                         Spacer()
-                        Text("1.0.0")
+                        Text("2.0.0")
                             .foregroundColor(.gray)
                     }
 
-                    Link(destination: URL(string: "https://github.com/radfordben/hermes-visionclaw")!) {
+                    Link(destination: URL(string: "https://github.com/radfordben/hermespecs-app")!) {
                         HStack {
-                            Text("hermes.settings.github".localized)
+                            Text("GitHub")
                             Spacer()
                             Image(systemName: "arrow.up.right.square")
                                 .foregroundColor(.gray)
@@ -167,17 +183,15 @@ struct HermesSettingsView: View {
                     }
                 }
             }
-            .navigationTitle("hermes.settings.title".localized)
+            .navigationTitle("HerMeSpecs Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("general.cancel".localized) {
-                        dismiss()
-                    }
+                    Button("Cancel") { dismiss() }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("general.save".localized) {
+                    Button("Save") {
                         saveSettings()
                         dismiss()
                     }
@@ -186,88 +200,100 @@ struct HermesSettingsView: View {
             .onAppear {
                 loadSettings()
             }
-            .alert("hermes.settings.reset_confirm".localized, isPresented: $showResetConfirmation) {
-                Button("general.cancel".localized, role: .cancel) {}
-                Button("general.reset".localized, role: .destructive) {
-                    resetSession()
-                }
-            }
         }
     }
 
     // MARK: - Private Methods
 
     private func loadSettings() {
-        serverHost = hermesService.serverHost
-        serverPort = String(hermesService.serverPort)
-        useSecureConnection = hermesService.useSecureConnection
-        apiToken = hermesService.loadAPIToken() ?? ""
+        selectedProvider = aiService.selectedProvider
+        selectedModel = aiService.selectedModel
+        serverHost = aiService.serverHost
+        serverPort = String(aiService.serverPort)
+
+        switch selectedProvider {
+        case .openai:
+            apiKey = APIKeyManager.shared.getOpenAIAPIKey() ?? ""
+        case .anthropic:
+            apiKey = APIKeyManager.shared.getAnthropicAPIKey() ?? ""
+        case .alibaba:
+            apiKey = APIKeyManager.shared.getAPIKey(for: .alibaba, endpoint: .beijing) ?? ""
+        case .ollama:
+            apiKey = ""
+        }
+
+        Task { await refreshModels() }
     }
 
-    private func saveSettings() {
-        hermesService.serverHost = serverHost
-        hermesService.serverPort = Int(serverPort) ?? 8787
-        hermesService.useSecureConnection = useSecureConnection
-        hermesService.saveSettings()
+    private func updateProviderDefaults() {
+        selectedModel = selectedProvider.defaultChatModel
+        apiKey = ""
+        if selectedProvider == .ollama {
+            serverHost = "localhost"
+            serverPort = "11434"
+        }
+        Task { await refreshModels() }
+    }
 
-        if !apiToken.isEmpty {
-            hermesService.saveAPIToken(apiToken)
+    private func refreshModels() async {
+        if selectedProvider == .ollama {
+            availableModels = await aiService.fetchAvailableModels()
+            if !availableModels.contains(selectedModel) && !availableModels.isEmpty {
+                selectedModel = availableModels[0]
+            }
         } else {
-            hermesService.saveAPIToken("")
+            availableModels = [selectedProvider.defaultChatModel, selectedProvider.defaultVisionModel]
         }
     }
 
-    private func saveAndConnect() {
-        saveSettings()
-        hermesService.connect()
+    private func saveSettings() {
+        aiService.selectedProvider = selectedProvider
+        aiService.selectedModel = selectedModel
+        aiService.serverHost = serverHost
+        aiService.serverPort = Int(serverPort) ?? 11434
+
+        switch selectedProvider {
+        case .openai:
+            if !apiKey.isEmpty { _ = APIKeyManager.shared.saveOpenAIAPIKey(apiKey) }
+        case .anthropic:
+            if !apiKey.isEmpty { _ = APIKeyManager.shared.saveAnthropicAPIKey(apiKey) }
+        case .alibaba:
+            if !apiKey.isEmpty { _ = APIKeyManager.shared.saveAPIKey(apiKey, for: .alibaba, endpoint: .beijing) }
+        case .ollama:
+            break
+        }
+
+        aiService.saveSettings()
+        aiService.connect()
     }
 
     private func testConnection() {
         isTestingConnection = true
         testResult = nil
 
-        // Save current settings temporarily
-        let originalHost = hermesService.serverHost
-        let originalPort = hermesService.serverPort
-        let originalSecure = hermesService.useSecureConnection
+        // Temporarily apply settings
+        let origProvider = aiService.selectedProvider
+        let origModel = aiService.selectedModel
+        aiService.selectedProvider = selectedProvider
+        aiService.selectedModel = selectedModel
+        aiService.serverHost = serverHost
+        aiService.serverPort = Int(serverPort) ?? 11434
 
-        hermesService.serverHost = serverHost
-        hermesService.serverPort = Int(serverPort) ?? 8787
-        hermesService.useSecureConnection = useSecureConnection
-
-        // Attempt connection
-        hermesService.connect()
-
-        // Wait and check status
         Task {
-            try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
+            let success = await aiService.testConnection()
 
             await MainActor.run {
                 isTestingConnection = false
+                testSuccess = success
+                testResult = success ? "Connection successful!" : "Connection failed. Check that Ollama is running."
 
-                if hermesService.connectionState.isConnected {
-                    testResult = "hermes.settings.test_success".localized
-                    testSuccess = true
-                } else {
-                    testResult = "hermes.settings.test_failed".localized
-                    testSuccess = false
-                }
-
-                // Restore original settings if not connected
-                if !hermesService.connectionState.isConnected {
-                    hermesService.disconnect()
-                    hermesService.serverHost = originalHost
-                    hermesService.serverPort = originalPort
-                    hermesService.useSecureConnection = originalSecure
+                if !success {
+                    // Restore original settings
+                    aiService.selectedProvider = origProvider
+                    aiService.selectedModel = origModel
                 }
             }
         }
-    }
-
-    private func resetSession() {
-        let newSessionId = UUID().uuidString
-        UserDefaults.standard.set(newSessionId, forKey: "hermes_session_id")
-        hermesService.currentSessionId = newSessionId
     }
 }
 
@@ -303,15 +329,15 @@ struct ConnectionStatusIndicator: View {
     private var statusText: String {
         switch state {
         case .connected:
-            return "hermes.status.connected".localized
+            return "Ready"
         case .connecting:
-            return "hermes.status.connecting".localized
+            return "Connecting"
         case .authenticating:
-            return "hermes.status.authenticating".localized
+            return "Authenticating"
         case .disconnected:
-            return "hermes.status.disconnected".localized
+            return "Not configured"
         case .error:
-            return "hermes.status.error".localized
+            return "Error"
         }
     }
 }

@@ -37,7 +37,7 @@ struct HomeScreenView: View {
       VStack(spacing: AppSpacing.xl) {
         Spacer()
 
-        // TurboMeta Logo
+        // HerMeSpecs Logo
         VStack(spacing: AppSpacing.md) {
           Image(.cameraAccessIcon)
             .resizable()
@@ -45,7 +45,7 @@ struct HomeScreenView: View {
             .frame(width: 100)
             .shadow(color: AppShadow.medium(), radius: 10, x: 0, y: 5)
 
-          Text("TurboMeta")
+          Text("HerMeSpecs")
             .font(AppTypography.largeTitle)
             .foregroundColor(AppColors.textPrimary)
 
@@ -132,7 +132,7 @@ struct HomeScreenView: View {
               Text("连接成功")
                 .font(AppTypography.headline)
                 .foregroundColor(.white)
-              Text("正在进入 TurboMeta...")
+              Text("Entering HerMeSpecs...")
                 .font(AppTypography.caption)
                 .foregroundColor(.white.opacity(0.9))
             }

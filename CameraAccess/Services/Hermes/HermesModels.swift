@@ -6,96 +6,7 @@
 
 import Foundation
 
-// MARK: - AnyCodableValue (Shared with OpenClaw pattern)
-
-enum AnyCodableValue: Codable {
-    case string(String)
-    case int(Int)
-    case double(Double)
-    case bool(Bool)
-    case array([AnyCodableValue])
-    case dictionary([String: AnyCodableValue])
-    case null
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let v = try? container.decode(Bool.self) { self = .bool(v) }
-        else if let v = try? container.decode(Int.self) { self = .int(v) }
-        else if let v = try? container.decode(Double.self) { self = .double(v) }
-        else if let v = try? container.decode(String.self) { self = .string(v) }
-        else if let v = try? container.decode([AnyCodableValue].self) { self = .array(v) }
-        else if let v = try? container.decode([String: AnyCodableValue].self) { self = .dictionary(v) }
-        else { self = .null }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .string(let v): try container.encode(v)
-        case .int(let v): try container.encode(v)
-        case .double(let v): try container.encode(v)
-        case .bool(let v): try container.encode(v)
-        case .array(let v): try container.encode(v)
-        case .dictionary(let v): try container.encode(v)
-        case .null: try container.encodeNil()
-        }
-    }
-
-    var stringValue: String? {
-        if case .string(let v) = self { return v }
-        return nil
-    }
-
-    var intValue: Int? {
-        if case .int(let v) = self { return v }
-        return nil
-    }
-
-    var doubleValue: Double? {
-        if case .double(let v) = self { return v }
-        if case .int(let v) = self { return Double(v) }
-        return nil
-    }
-
-    var boolValue: Bool? {
-        if case .bool(let v) = self { return v }
-        return nil
-    }
-
-    var arrayValue: [AnyCodableValue]? {
-        if case .array(let v) = self { return v }
-        return nil
-    }
-
-    var dictionaryValue: [String: AnyCodableValue]? {
-        if case .dictionary(let v) = self { return v }
-        return nil
-    }
-
-    static func from(_ value: Any) -> AnyCodableValue {
-        switch value {
-        case let v as String: return .string(v)
-        case let v as Int: return .int(v)
-        case let v as Double: return .double(v)
-        case let v as Bool: return .bool(v)
-        case let v as [Any]: return .array(v.map { from($0) })
-        case let v as [String: Any]: return .dictionary(v.mapValues { from($0) })
-        default: return .null
-        }
-    }
-
-    func toAny() -> Any {
-        switch self {
-        case .string(let v): return v
-        case .int(let v): return v
-        case .double(let v): return v
-        case .bool(let v): return v
-        case .array(let v): return v.map { $0.toAny() }
-        case .dictionary(let v): return v.mapValues { $0.toAny() }
-        case .null: return NSNull()
-        }
-    }
-}
+// AnyCodableValue is defined in OpenClawModels.swift
 
 // MARK: - Hermes Event Types
 
@@ -200,7 +111,7 @@ struct HermesDeviceInfo: Codable {
 
     static var current: HermesDeviceInfo {
         HermesDeviceInfo(
-            deviceId: HermesService.shared.deviceId,
+            deviceId: HermesAIService.shared.deviceId,
             deviceType: "Ray-Ban Meta",
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0",
             osVersion: UIDevice.current.systemVersion,

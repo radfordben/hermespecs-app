@@ -29,7 +29,7 @@ class ToolIntegrationManager: ObservableObject {
     
     private let registry = ToolRegistry.shared
     private let confirmationManager = VoiceConfirmationManager.shared
-    private let hermesService: HermesService
+    private let aiService: HermesAIService
     
     // MARK: - Callbacks
     
@@ -39,8 +39,8 @@ class ToolIntegrationManager: ObservableObject {
     
     // MARK: - Initialization
     
-    init(hermesService: HermesService = .shared) {
-        self.hermesService = hermesService
+    init(aiService: HermesAIService = .shared) {
+        self.aiService = aiService
         loadTools()
         registerLocalExecutors()
     }
@@ -317,24 +317,16 @@ class ToolIntegrationManager: ObservableObject {
     }
     
     private func executeRemoteTool(_ tool: HermesTool, parameters: [String: Any]) async -> ToolExecutionResult {
-        // Send to Hermes for execution
-        // This would be implemented via WebSocket to Hermes Agent
-        
-        do {
-            let result = try await hermesService.executeTool(tool.id, parameters: parameters)
-            return result
-        } catch {
-            return ToolExecutionResult(
-                success: false,
-                message: "Remote execution failed",
-                detailedMessage: error.localizedDescription,
-                data: nil,
-                error: error.localizedDescription,
-                followUpActions: [
-                    ToolExecutionResult.FollowUpAction(label: "Try Again", command: "retry \(tool.id)", icon: "arrow.clockwise")
-                ]
-            )
-        }
+        // Remote tools are handled by the AI provider through tool calls in the response
+        // The AI model will return structured tool calls that are executed locally
+        return ToolExecutionResult(
+            success: false,
+            message: "Remote tool '\(tool.name)' requires AI provider support. Configure your AI provider in Settings.",
+            detailedMessage: nil,
+            data: nil,
+            error: "Remote tools not yet supported via direct AI API",
+            followUpActions: nil
+        )
     }
     
     private func validateParameters(_ tool: HermesTool, parameters: [String: Any]) -> [String: String] {
@@ -399,21 +391,5 @@ class ToolIntegrationManager: ObservableObject {
     }
 }
 
-// MARK: - HermesService Extension
+// MARK: - End of ToolIntegrationManager
 
-extension HermesService {
-    func executeTool(_ toolId: String, parameters: [String: Any]) async throws -> ToolExecutionResult {
-        // Send tool execution request via WebSocket
-        // Wait for response
-        
-        // Placeholder implementation
-        return ToolExecutionResult(
-            success: true,
-            message: "Tool executed via Hermes",
-            detailedMessage: nil,
-            data: ["tool_id": toolId],
-            error: nil,
-            followUpActions: nil
-        )
-    }
-}

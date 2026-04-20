@@ -55,7 +55,7 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
 
     // MARK: - Dependencies
 
-    private let hermesService: HermesService
+    private let aiService: HermesAIService
     private let ttsService: TTSService
     private weak var streamViewModel: StreamSessionViewModel?
 
@@ -68,9 +68,9 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
 
     // MARK: - Init
 
-    init(hermesService: HermesService = .shared,
+    init(aiService: HermesAIService = .shared,
          ttsService: TTSService = .shared) {
-        self.hermesService = hermesService
+        self.aiService = aiService
         self.ttsService = ttsService
         super.init()
 
@@ -91,11 +91,11 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
         lastCommand = command
         onCommandReceived?(command)
 
-        // Check connection
-        guard hermesService.connectionState.isConnected else {
+        // Check API key
+        guard aiService.hasAPIKeyConfigured else {
             let result = HermesRouterResult(
                 success: false,
-                message: "Not connected to Hermes. Please check your connection.",
+                message: "No API key configured. Please go to Settings and configure your AI provider.",
                 toolCalls: [],
                 shouldSpeak: true,
                 audioData: nil,
@@ -105,17 +105,17 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
             return result
         }
 
-        // Send to Hermes
+        // Send to AI service
         let responseResult: Result<HermesResponse, Error>
         if let image = image {
             responseResult = await withCheckedContinuation { continuation in
-                hermesService.sendVisionCommand(command, image: image) { result in
+                aiService.sendVisionCommand(command, image: image) { result in
                     continuation.resume(returning: result)
                 }
             }
         } else {
             responseResult = await withCheckedContinuation { continuation in
-                hermesService.sendCommand(command) { result in
+                aiService.sendCommand(command) { result in
                     continuation.resume(returning: result)
                 }
             }
@@ -211,13 +211,15 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
             toolResult = HermesToolResult(
                 success: true,
                 message: "Tool executed successfully",
-                data: ["result": AnyCodableValue.from(data)]
+                data: ["result": AnyCodableValue.from(data)],
+                error: nil
             )
         case .failure(let error):
             toolResult = HermesToolResult(
                 success: false,
                 message: error.localizedDescription,
-                data: nil
+                data: nil,
+                error: error.localizedDescription
             )
         }
 
@@ -257,13 +259,13 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
     // MARK: - Private Methods
 
     private func setupServiceCallbacks() {
-        hermesService.onToolExecution = { [weak self] toolCall in
+        aiService.onToolExecution = { [weak self] toolCall in
             Task { @MainActor [weak self] in
                 _ = await self?.handleToolExecution(toolCall)
             }
         }
 
-        hermesService.onError = { [weak self] error in
+        aiService.onError = { [weak self] error in
             self?.onError?(error)
         }
     }
@@ -341,7 +343,7 @@ class HermesCommandRouter: NSObject, ObservableObject, HermesCommandRouterProtoc
             "deviceConnected": viewModel.hasActiveDevice,
             "isStreaming": viewModel.isStreaming,
             "hasVideoFrame": viewModel.currentVideoFrame != nil,
-            "connectionState": "\(hermesService.connectionState)"
+            "connectionState": "\(aiService.connectionState)"
         ]
 
         return .success(status)
