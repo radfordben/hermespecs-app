@@ -94,6 +94,22 @@
 		OC1005000500050005 /* OpenClawDeviceIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = OC2005000500050005 /* OpenClawDeviceIdentity.swift */; };
 		OC1006000600060006 /* OpenClawChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OC2006000600060006 /* OpenClawChatView.swift */; };
 		OC1007000700070007 /* OpenClawASRService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OC2007000700070007 /* OpenClawASRService.swift */; };
+		HM1001000100010001 /* HermesAIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2001000100010001 /* HermesAIService.swift */; };
+		HM1002000200020002 /* HermesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2002000200020002 /* HermesService.swift */; };
+		HM1003000300030003 /* HermesCommandRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2003000300030003 /* HermesCommandRouter.swift */; };
+		HM1004000400040004 /* HermesCommandRouter+Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2004000400040004 /* HermesCommandRouter+Vision.swift */; };
+		HM1005000500050005 /* HermesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2005000500050005 /* HermesModels.swift */; };
+		HM1006000600060006 /* ToolRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2006000600060006 /* ToolRegistry.swift */; };
+		HM1007000700070007 /* ToolIntegrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2007000700070007 /* ToolIntegrationManager.swift */; };
+		HM1008000800080008 /* ToolExecutors.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2008000800080008 /* ToolExecutors.swift */; };
+		HM1009000900090009 /* MultimodalMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2009000900090009 /* MultimodalMemory.swift */; };
+		AM1001000100010001 /* AdaptiveStreamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AM2001000100010001 /* AdaptiveStreamManager.swift */; };
+		AM1002000200020002 /* ConnectionRecoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AM2002000200020002 /* ConnectionRecoveryManager.swift */; };
+		AM1003000300030003 /* PerformanceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AM2003000300030003 /* PerformanceMonitor.swift */; };
+		HM1010001000100010 /* HermesChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2010001000100010 /* HermesChatView.swift */; };
+		HM1011001100110011 /* HermesSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HM2011001100110011 /* HermesSettingsView.swift */; };
+		VS1001000100010001 /* VisionFrameBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = VS2001000100010001 /* VisionFrameBuffer.swift */; };
+		VS1002000200020002 /* VisionFrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = VS2002000200020002 /* VisionFrameProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -206,6 +222,22 @@
 		OC2005000500050005 /* OpenClawDeviceIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawDeviceIdentity.swift; sourceTree = "<group>"; };
 		OC2006000600060006 /* OpenClawChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawChatView.swift; sourceTree = "<group>"; };
 		OC2007000700070007 /* OpenClawASRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawASRService.swift; sourceTree = "<group>"; };
+		HM2001000100010001 /* HermesAIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesAIService.swift; sourceTree = "<group>"; };
+		HM2002000200020002 /* HermesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesService.swift; sourceTree = "<group>"; };
+		HM2003000300030003 /* HermesCommandRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesCommandRouter.swift; sourceTree = "<group>"; };
+		HM2004000400040004 /* HermesCommandRouter+Vision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HermesCommandRouter+Vision.swift"; sourceTree = "<group>"; };
+		HM2005000500050005 /* HermesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesModels.swift; sourceTree = "<group>"; };
+		HM2006000600060006 /* ToolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRegistry.swift; sourceTree = "<group>"; };
+		HM2007000700070007 /* ToolIntegrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolIntegrationManager.swift; sourceTree = "<group>"; };
+		HM2008000800080008 /* ToolExecutors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolExecutors.swift; sourceTree = "<group>"; };
+		HM2009000900090009 /* MultimodalMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultimodalMemory.swift; sourceTree = "<group>"; };
+		AM2001000100010001 /* AdaptiveStreamManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AdaptiveStreamManager.swift; path = Managers/AdaptiveStreamManager.swift; sourceTree = "<group>"; };
+		AM2002000200020002 /* ConnectionRecoveryManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConnectionRecoveryManager.swift; path = Managers/ConnectionRecoveryManager.swift; sourceTree = "<group>"; };
+		AM2003000300030003 /* PerformanceMonitor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PerformanceMonitor.swift; path = Managers/PerformanceMonitor.swift; sourceTree = "<group>"; };
+		HM2010001000100010 /* HermesChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesChatView.swift; sourceTree = "<group>"; };
+		HM2011001100110011 /* HermesSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HermesSettingsView.swift; sourceTree = "<group>"; };
+		VS2001000100010001 /* VisionFrameBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionFrameBuffer.swift; sourceTree = "<group>"; };
+		VS2002000200020002 /* VisionFrameProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionFrameProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -236,6 +268,9 @@
 				1111827A1CF7A278A6DC6934 /* APIProviderManager.swift */,
 				51A08DC107E5A57DDE6036C3 /* QuickVisionModeManager.swift */,
 				DC72379319F7F8AAF8019018 /* LiveAIManager.swift */,
+				AM2001000100010001 /* AdaptiveStreamManager.swift */,
+				AM2002000200020002 /* ConnectionRecoveryManager.swift */,
+				AM2003000300030003 /* PerformanceMonitor.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -273,6 +308,7 @@
 			isa = PBXGroup;
 			children = (
 				OC3000000000000000 /* OpenClaw */,
+				HM3000000000000000 /* Hermes */,
 				4B69CCC62F050D5D00D1D025 /* RTMPStreamingService.swift */,
 				4BA57A8D2EF8227E002EC214 /* ConversationStorage.swift */,
 				4BA57A8E2EF8227E002EC214 /* LeanEatService.swift */,
@@ -284,6 +320,8 @@
 				63EB4C91D8E0C8AC944DF95A /* GeminiLiveService.swift */,
 				C7F490219E64EC144DAF8A8C /* QuickVisionStorage.swift */,
 				LT1002000200020002 /* LiveTranslateService.swift */,
+				VS2001000100010001 /* VisionFrameBuffer.swift */,
+				VS2002000200020002 /* VisionFrameProcessor.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -386,6 +424,8 @@
 				LT1005000500050005 /* LiveTranslateSettingsView.swift */,
 				OC2004000400040004 /* OpenClawSettingsView.swift */,
 				OC2006000600060006 /* OpenClawChatView.swift */,
+					HM2010001000100010 /* HermesChatView.swift */,
+					HM2011001100110011 /* HermesSettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -455,6 +495,22 @@
 				OC2007000700070007 /* OpenClawASRService.swift */,
 			);
 			path = OpenClaw;
+			sourceTree = "<group>";
+		};
+		HM3000000000000000 /* Hermes */ = {
+			isa = PBXGroup;
+			children = (
+				HM2001000100010001 /* HermesAIService.swift */,
+				HM2002000200020002 /* HermesService.swift */,
+				HM2003000300030003 /* HermesCommandRouter.swift */,
+				HM2004000400040004 /* HermesCommandRouter+Vision.swift */,
+				HM2005000500050005 /* HermesModels.swift */,
+				HM2006000600060006 /* ToolRegistry.swift */,
+				HM2007000700070007 /* ToolIntegrationManager.swift */,
+				HM2008000800080008 /* ToolExecutors.swift */,
+				HM2009000900090009 /* MultimodalMemory.swift */,
+			);
+			path = Hermes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -644,6 +700,22 @@
 				OC1005000500050005 /* OpenClawDeviceIdentity.swift in Sources */,
 				OC1006000600060006 /* OpenClawChatView.swift in Sources */,
 				OC1007000700070007 /* OpenClawASRService.swift in Sources */,
+				HM1001000100010001 /* HermesAIService.swift in Sources */,
+				HM1002000200020002 /* HermesService.swift in Sources */,
+				HM1003000300030003 /* HermesCommandRouter.swift in Sources */,
+				HM1004000400040004 /* HermesCommandRouter+Vision.swift in Sources */,
+				HM1005000500050005 /* HermesModels.swift in Sources */,
+				HM1006000600060006 /* ToolRegistry.swift in Sources */,
+				HM1007000700070007 /* ToolIntegrationManager.swift in Sources */,
+				HM1008000800080008 /* ToolExecutors.swift in Sources */,
+				HM1009000900090009 /* MultimodalMemory.swift in Sources */,
+				AM1001000100010001 /* AdaptiveStreamManager.swift in Sources */,
+				AM1002000200020002 /* ConnectionRecoveryManager.swift in Sources */,
+				AM1003000300030003 /* PerformanceMonitor.swift in Sources */,
+				HM1010001000100010 /* HermesChatView.swift in Sources */,
+				HM1011001100110011 /* HermesSettingsView.swift in Sources */,
+				VS1001000100010001 /* VisionFrameBuffer.swift in Sources */,
+				VS1002000200020002 /* VisionFrameProcessor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,7 +771,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CameraAccess/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = " TurboMeta";
+				INFOPLIST_KEY_CFBundleDisplayName = HerMeSpecs;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -728,7 +800,7 @@
 				DEVELOPMENT_TEAM = 2X7K2P6UKK;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = CameraAccess/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = " TurboMeta";
+				INFOPLIST_KEY_CFBundleDisplayName = HerMeSpecs;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
