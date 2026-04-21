@@ -42,9 +42,9 @@
 		<key>AppLinkURLScheme</key>
 		<string>hermespecs://</string>
 		<key>MetaAppID</key>
-		<string>$(META_APP_ID)</string>
+		<string>1673545140501734</string>
 		<key>ClientToken</key>
-		<string>$(CLIENT_TOKEN)</string>
+		<string>AR|1673545140501734|3d10e378423d1aeffac051d94eb662e8</string>
 		<key>TeamID</key>
 		<string>$(DEVELOPMENT_TEAM)</string>
 	</dict>
